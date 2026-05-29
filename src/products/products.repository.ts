@@ -4,32 +4,57 @@ import { Product } from '../../generated/prisma/client.js';
 import { CreateProductDto } from './dto/create-product.dto.js';
 import { UpdateProductDto } from './dto/update-product.dto.js';
 
+
 @Injectable()
 export class ProductsRepository {
     constructor(private readonly prisma: PrismaService) { }
 
-    findAll(): Promise<Product[]> {
-        return this.prisma.product.findMany()
+    findAll(query?: string): Promise<Product[]> {
+        return this.prisma.product.findMany(
+            {
+                where: query ?
+                    {
+                        name:
+                        {
+                            contains: query,
+                            mode: 'insensitive'
+                        }
+                    } : undefined
+            }
+        )
     }
 
     findOne(id: number): Promise<Product | null> {
-        return this.prisma.product.findUnique({
-            where: {
-                id: id
-            }
-        })
+        return this.prisma.product.findUnique(
+            {
+                where:
+                {
+                    id: id
+                }
+            })
     }
 
     create(data: CreateProductDto): Promise<Product> {
-        return this.prisma.product.create({
-            data
-        })
+        return this.prisma.product.create(
+            {
+                data
+            })
     }
 
     update(id: number, data: UpdateProductDto): Promise<Product> {
-        return this.prisma.product.update({
-            where: { id },
-            data
-        })
+        return this.prisma.product.update(
+            {
+                where: { id },
+                data
+            })
+    }
+
+    delete(id: number): Promise<Product> {
+        return this.prisma.product.delete(
+            {
+                where: {
+                    id: id
+                }
+            })
     }
 }
