@@ -33,3 +33,31 @@ model Category {
   updatedAt DateTime  @updatedAt
   products  Product[]
 }
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  sessions Session[]
+}
+
+model Session{
+  id  Int @id @default(autoincrement())
+  userId  Int
+  refreshHash String
+  revokedAt DateTime?
+  expiresAt DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}

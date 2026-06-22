@@ -13,7 +13,7 @@ import type { ProductWithCategory } from './types/product-with-category.type.js'
 export class ProductsService {
   constructor(private readonly productsRepository: ProductsRepository) {}
 
-  async findAll(search?: string): Promise<ProductWithCategory[]> {
+  findAll(search?: string): Promise<ProductWithCategory[]> {
     const query = search?.trim();
     return this.productsRepository.findAll(query);
   }
@@ -32,7 +32,7 @@ export class ProductsService {
     return product;
   }
 
-  async create(data: CreateProductDto): Promise<Product> {
+  create(data: CreateProductDto): Promise<Product> {
     return this.productsRepository.create(data);
   }
 
