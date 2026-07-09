@@ -12,5 +12,10 @@ export class RegisterUserDto {
 
   @IsNotEmpty()
   @IsString()
+  @MinLength(8)
+  passwordRepeat!: string;
+
+  @IsNotEmpty()
+  @IsString()
   name!: string;
 }

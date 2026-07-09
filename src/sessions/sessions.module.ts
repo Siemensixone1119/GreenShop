@@ -5,5 +5,6 @@ import { SessionsRepository } from './sessions.repository.js';
 
 @Module({
   providers: [SessionsService, PrismaService, SessionsRepository],
+  exports: [SessionsService],
 })
 export class SessionsModule {}

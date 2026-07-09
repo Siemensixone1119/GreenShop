@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateUserData } from './types/create-user-data.type.js';
 import { UpdateUserData } from './types/update-user-data.type.js';
 import { PublicUser } from './types/public-user.type.js';
+import { AuthUser } from './types/auth-user-data.type.js';
 
 @Injectable()
 export class UsersRepository {
@@ -12,6 +13,7 @@ export class UsersRepository {
     id: true,
     email: true,
     name: true,
+    role: true,
     createdAt: true,
     updatedAt: true,
   } as const;
@@ -27,6 +29,24 @@ export class UsersRepository {
       where: { email: email },
       select: this.publicUserSelect,
     });
+  }
+
+  findAuthByEmail(email: string): Promise<AuthUser | null>{
+    return this.prisma.user.findUnique(
+      { where: {
+          email
+        },
+        select : {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+          passwordHash: true
+        }
+      }
+    )
   }
 
   findById(id: number): Promise<PublicUser | null> {

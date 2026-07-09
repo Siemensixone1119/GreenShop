@@ -13,7 +13,7 @@ datasource db {
   provider = "postgresql"
 }
 
-model Product {
+model Products {
   id          Int      @id @default(autoincrement())
   name        String
   description String?
@@ -26,7 +26,7 @@ model Product {
   updatedAt   DateTime @updatedAt
 }
 
-model Category {
+model Categories {
   id        Int       @id @default(autoincrement())
   name      String
   createdAt DateTime  @default(now())
@@ -34,12 +34,12 @@ model Category {
   products  Product[]
 }
 
-enum Role {
+enum Roles {
   USER
   ADMIN
 }
 
-model User {
+model Users {
   id           Int      @id @default(autoincrement())
   email        String   @unique
   passwordHash String
@@ -50,7 +50,7 @@ model User {
   sessions Session[]
 }
 
-model Session{
+model Sessions{
   id  Int @id @default(autoincrement())
   userId  Int
   refreshHash String

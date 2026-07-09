@@ -8,6 +8,7 @@ import { UsersRepository } from './users.repository.js';
 import { CreateUserData } from './types/create-user-data.type.js';
 import { UpdateUserData } from './types/update-user-data.type.js';
 import { PublicUser } from './types/public-user.type.js';
+import { AuthUser } from './types/auth-user-data.type.js';
 
 @Injectable()
 export class UsersService {
@@ -23,6 +24,14 @@ export class UsersService {
     }
 
     return this.userReporitory.findByEmail(email);
+  }
+
+  findAuthByEmail(email: string): Promise<AuthUser | null> {
+    if (!email.trim().length) {
+      throw new BadRequestException('Email не передан');
+    }
+
+    return this.userReporitory.findAuthByEmail(email)
   }
 
   async findById(id: number): Promise<PublicUser> {

@@ -7,6 +7,7 @@ import { CategoriesModule } from './categories/categories.module.js';
 import { UsersModule } from './users/users.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { SessionsModule } from './sessions/sessions.module.js';
+import { ConfigModule } from '@nestjs/config'
 
 @Module({
   imports: [
@@ -16,8 +17,11 @@ import { SessionsModule } from './sessions/sessions.module.js';
     UsersModule,
     AuthModule,
     SessionsModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    })
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
