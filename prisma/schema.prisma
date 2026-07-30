@@ -13,33 +13,36 @@ datasource db {
   provider = "postgresql"
 }
 
-model Products {
+model Product {
   id          Int      @id @default(autoincrement())
   name        String
   description String?
   price       Float
   stock       Int      @default(0)
   categoryId  Int
-  category    Category @relation(fields: [categoryId], references: [id])
   image       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  category    Category   @relation(fields: [categoryId], references: [id])
+  cartItems   CartItem[]
 }
 
-model Categories {
+model Category {
   id        Int       @id @default(autoincrement())
   name      String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
   products  Product[]
 }
 
-enum Roles {
+enum Role {
   USER
   ADMIN
 }
 
-model Users {
+model User {
   id           Int      @id @default(autoincrement())
   email        String   @unique
   passwordHash String
@@ -47,17 +50,47 @@ model Users {
   role         Role     @default(USER)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  sessions Session[]
+
+  sessions     Session[]
+  cart         Cart?
 }
 
-model Sessions{
-  id  Int @id @default(autoincrement())
-  userId  Int
+model Session {
+  id          Int       @id @default(autoincrement())
+  userId      Int
   refreshHash String
-  revokedAt DateTime?
-  expiresAt DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revokedAt   DateTime?
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
+}
+
+model Cart {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+}
+
+model CartItem {
+  id        Int      @id @default(autoincrement())
+  cartId    Int
+  productId Int
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, productId])
+  @@index([cartId])
+  @@index([productId])
 }

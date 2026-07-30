@@ -7,5 +7,6 @@ import { ProductsRepository } from './products.repository.js';
 @Module({
   controllers: [ProductsController],
   providers: [ProductsService, ProductsRepository, PrismaService],
+  exports: [ProductsService]
 })
 export class ProductsModule {}

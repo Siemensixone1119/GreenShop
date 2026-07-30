@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { SessionsModule } from './sessions/sessions.module.js';
 import { ConfigModule } from '@nestjs/config'
+import { CartModule } from './cart/cart.module.js';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { ConfigModule } from '@nestjs/config'
     SessionsModule,
     ConfigModule.forRoot({
       isGlobal: true,
-    })
+    }),
+    CartModule
   ],
   controllers: [AppController],
   providers: [AppService],
