@@ -1,11 +1,14 @@
-import { IsNotEmpty, IsString, IsEmail } from 'class-validator';
+import { IsNotEmpty, IsString, IsEmail, MaxLength } from 'class-validator';
+import { Trim } from '../../common/decorators/trim.decorator.js';
 
 export class LoginUserDto {
-  @IsNotEmpty()
+  @Trim()
   @IsEmail()
+  @MaxLength(254)
   email!: string;
 
   @IsNotEmpty()
   @IsString()
+  @MaxLength(72)
   password!: string;
 }

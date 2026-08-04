@@ -4,46 +4,49 @@ import type { CartItem } from '../../generated/prisma/client.js';
 
 @Injectable()
 export class CartItemRepository {
-  constructor(private readonly prisma: PrismaService){}
+  constructor(private readonly prisma: PrismaService) {}
 
   findItem(cartId: number, productId: number): Promise<CartItem | null> {
     return this.prisma.cartItem.findUnique({
-      where:
-      {
+      where: {
         cartId_productId: {
           cartId,
           productId,
-        }
-      }
-    })
+        },
+      },
+    });
   }
 
-  create(cartId: number, productId: number, quantity: number): Promise<CartItem> {
+  create(
+    cartId: number,
+    productId: number,
+    quantity: number,
+  ): Promise<CartItem> {
     return this.prisma.cartItem.create({
       data: {
         cartId,
         productId,
-        quantity
-      }
-    })
+        quantity,
+      },
+    });
   }
 
   delete(cartItemId: number): Promise<CartItem> {
     return this.prisma.cartItem.delete({
       where: {
-        id: cartItemId
-      }
-    })
+        id: cartItemId,
+      },
+    });
   }
 
   updateQuantity(cartItemId: number, quantity: number): Promise<CartItem> {
     return this.prisma.cartItem.update({
       where: {
-        id: cartItemId
+        id: cartItemId,
       },
       data: {
-        quantity
-      }
-    })
+        quantity,
+      },
+    });
   }
 }

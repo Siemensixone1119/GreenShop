@@ -31,22 +31,21 @@ export class UsersRepository {
     });
   }
 
-  findAuthByEmail(email: string): Promise<AuthUser | null>{
-    return this.prisma.user.findUnique(
-      { where: {
-          email
-        },
-        select : {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-          createdAt: true,
-          updatedAt: true,
-          passwordHash: true
-        }
-      }
-    )
+  findAuthByEmail(email: string): Promise<AuthUser | null> {
+    return this.prisma.user.findUnique({
+      where: {
+        email,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+        passwordHash: true,
+      },
+    });
   }
 
   findById(id: number): Promise<PublicUser | null> {

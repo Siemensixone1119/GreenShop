@@ -1,5 +1,5 @@
-import { PublicUser } from "./public-user.type.js";
+import { PublicUser } from './public-user.type.js';
 
 export type AuthUser = PublicUser & {
-    passwordHash: string;
+  passwordHash: string;
 };

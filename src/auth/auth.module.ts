@@ -25,4 +25,4 @@ if (!jwtSecret) {
     }),
   ],
 })
-export class AuthModule { }
+export class AuthModule {}

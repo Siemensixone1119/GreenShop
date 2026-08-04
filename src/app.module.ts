@@ -7,8 +7,9 @@ import { CategoriesModule } from './categories/categories.module.js';
 import { UsersModule } from './users/users.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { SessionsModule } from './sessions/sessions.module.js';
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule } from '@nestjs/config';
 import { CartModule } from './cart/cart.module.js';
+import { OrderModule } from './order/order.module.js';
 
 @Module({
   imports: [
@@ -21,9 +22,10 @@ import { CartModule } from './cart/cart.module.js';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    CartModule
+    CartModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

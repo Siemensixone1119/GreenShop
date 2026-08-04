@@ -9,9 +9,10 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
+      transform: true,
     }),
   );
-  app.use(cookieParser())
+  app.use(cookieParser());
   await app.listen(process.env.PORT ?? 1119);
 }
-bootstrap();
+void bootstrap();

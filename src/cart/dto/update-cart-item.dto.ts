@@ -1,8 +1,7 @@
-import { IsNotEmpty, IsNumber, Min } from "class-validator";
+import { IsInt, Min } from 'class-validator';
 
 export class UpdateCartItemDto {
-  @IsNotEmpty()
-  @IsNumber()
+  @IsInt()
   @Min(1)
-  quantity!: number
+  quantity!: number;
 }

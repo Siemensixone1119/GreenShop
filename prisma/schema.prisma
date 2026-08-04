@@ -17,29 +17,38 @@ model Product {
   id          Int      @id @default(autoincrement())
   name        String
   description String?
-  price       Float
+  price       Int
   stock       Int      @default(0)
   categoryId  Int
   image       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  category    Category   @relation(fields: [categoryId], references: [id])
-  cartItems   CartItem[]
+  category   Category    @relation(fields: [categoryId], references: [id])
+  cartItems  CartItem[]
+  orderItems OrderItem[]
 }
 
 model Category {
-  id        Int       @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   name      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  products  Product[]
+  products Product[]
 }
 
 enum Role {
   USER
   ADMIN
+}
+
+enum OrderStatus {
+  NEW
+  CONFIRMED
+  SHIPPED
+  COMPLETED
+  CANCELLED
 }
 
 model User {
@@ -51,8 +60,9 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  sessions     Session[]
-  cart         Cart?
+  sessions Session[]
+  cart    Cart?
+  orders   Order[]
 }
 
 model Session {
@@ -64,7 +74,7 @@ model Session {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
@@ -75,8 +85,8 @@ model Cart {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items     CartItem[]
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
 }
 
 model CartItem {
@@ -87,10 +97,50 @@ model CartItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, productId])
   @@index([cartId])
+  @@index([productId])
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+  userId     Int
+  status     OrderStatus @default(NEW)
+  totalPrice Int
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  firstName  String
+  lastName   String
+  region     String
+  city       String
+  street     String
+  house      String
+  apartment  String?
+  postalCode String?
+  phone      String
+  email      String
+
+  items OrderItem[]
+  user  User        @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id          Int     @id @default(autoincrement())
+  orderId     Int
+  productId   Int?
+  productName String
+  price       Int
+  quantity    Int
+  image       String?
+
+  order   Order    @relation(fields: [orderId], references: [id])
+  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
   @@index([productId])
 }

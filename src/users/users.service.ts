@@ -12,10 +12,10 @@ import { AuthUser } from './types/auth-user-data.type.js';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly userReporitory: UsersRepository) {}
+  constructor(private readonly userRepository: UsersRepository) {}
 
   findAll(): Promise<PublicUser[]> {
-    return this.userReporitory.findAll();
+    return this.userRepository.findAll();
   }
 
   findByEmail(email: string): Promise<PublicUser | null> {
@@ -23,7 +23,7 @@ export class UsersService {
       throw new BadRequestException('Email не передан');
     }
 
-    return this.userReporitory.findByEmail(email);
+    return this.userRepository.findByEmail(email);
   }
 
   findAuthByEmail(email: string): Promise<AuthUser | null> {
@@ -31,15 +31,15 @@ export class UsersService {
       throw new BadRequestException('Email не передан');
     }
 
-    return this.userReporitory.findAuthByEmail(email)
+    return this.userRepository.findAuthByEmail(email);
   }
 
   async findById(id: number): Promise<PublicUser> {
-    if (!id) {
+    if (id <= 0) {
       throw new BadRequestException('Id не передан');
     }
 
-    const user = await this.userReporitory.findById(id);
+    const user = await this.userRepository.findById(id);
 
     if (!user) {
       throw new NotFoundException('Пользователь с таким Id не найден');
@@ -71,7 +71,7 @@ export class UsersService {
       throw new ConflictException('Пользователь с таким email уже существует');
     }
 
-    return this.userReporitory.create({
+    return this.userRepository.create({
       email,
       passwordHash,
       name,
@@ -82,7 +82,7 @@ export class UsersService {
     const email = data.email?.trim() ?? null;
     const name = data.name?.trim() ?? null;
 
-    if (!id) {
+    if (id <= 0) {
       throw new BadRequestException('Id не передан');
     }
 
@@ -103,16 +103,16 @@ export class UsersService {
       updateData.name = name;
     }
 
-    return this.userReporitory.update(id, updateData);
+    return this.userRepository.update(id, updateData);
   }
 
   async delete(id: number): Promise<PublicUser> {
-    if (!id) {
+    if (id <= 0) {
       throw new BadRequestException('Id не передан');
     }
 
     await this.findById(id);
 
-    return this.userReporitory.delete(id);
+    return this.userRepository.delete(id);
   }
 }
