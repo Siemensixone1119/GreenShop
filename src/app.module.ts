@@ -10,6 +10,7 @@ import { SessionsModule } from './sessions/sessions.module.js';
 import { ConfigModule } from '@nestjs/config';
 import { CartModule } from './cart/cart.module.js';
 import { OrderModule } from './order/order.module.js';
+import { validateEnv } from './config/validate-env.js';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { OrderModule } from './order/order.module.js';
     SessionsModule,
     ConfigModule.forRoot({
       isGlobal: true,
+      validate: validateEnv,
     }),
     CartModule,
     OrderModule,
