@@ -48,9 +48,9 @@ export class UsersRepository {
     });
   }
 
-  findById(id: number): Promise<PublicUser | null> {
+  findById(userId: number): Promise<PublicUser | null> {
     return this.prisma.user.findUnique({
-      where: { id },
+      where: { id: userId },
       select: this.publicUserSelect,
     });
   }
@@ -62,17 +62,17 @@ export class UsersRepository {
     });
   }
 
-  update(id: number, data: UpdateUserData): Promise<PublicUser> {
+  update(userId: number, data: UpdateUserData): Promise<PublicUser> {
     return this.prisma.user.update({
-      where: { id },
+      where: { id: userId },
       data,
       select: this.publicUserSelect,
     });
   }
 
-  delete(id: number): Promise<PublicUser> {
+  delete(userId: number): Promise<PublicUser> {
     return this.prisma.user.delete({
-      where: { id },
+      where: { id: userId },
       select: this.publicUserSelect,
     });
   }

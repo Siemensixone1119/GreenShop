@@ -17,12 +17,12 @@ export class CategoriesService {
     return this.categoriesRepository.findAll(query);
   }
 
-  async findOne(id: number): Promise<Category> {
-    if (id <= 0) {
+  async findOne(categoryId: number): Promise<Category> {
+    if (categoryId <= 0) {
       throw new BadRequestException('некорректный id категории');
     }
 
-    const category = await this.categoriesRepository.findOne(id);
+    const category = await this.categoriesRepository.findOne(categoryId);
 
     if (!category) {
       throw new NotFoundException('Категория не найдена');
@@ -35,28 +35,28 @@ export class CategoriesService {
     return this.categoriesRepository.create(data);
   }
 
-  async update(id: number, data: UpdateCategoryDto): Promise<Category> {
-    if (id <= 0) {
+  async update(categoryId: number, data: UpdateCategoryDto): Promise<Category> {
+    if (categoryId <= 0) {
       throw new BadRequestException('некорректный id категории');
     }
 
-    await this.findOne(id);
-    return this.categoriesRepository.update(id, data);
+    await this.findOne(categoryId);
+    return this.categoriesRepository.update(categoryId, data);
   }
 
-  async delete(id: number): Promise<Category> {
-    if (id <= 0) {
+  async delete(categoryId: number): Promise<Category> {
+    if (categoryId <= 0) {
       throw new BadRequestException('некорректный id категории');
     }
 
-    await this.findOne(id);
+    await this.findOne(categoryId);
 
-    if (await this.categoriesRepository.hasProducts(id)) {
+    if (await this.categoriesRepository.hasProducts(categoryId)) {
       throw new BadRequestException(
         'Нельзя удалить категорию, в которой есть товары',
       );
     }
 
-    return this.categoriesRepository.delete(id);
+    return this.categoriesRepository.delete(categoryId);
   }
 }

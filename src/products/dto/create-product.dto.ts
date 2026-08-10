@@ -1,12 +1,16 @@
 import {
+  IsArray,
   IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
   Min,
+  ValidateNested,
 } from 'class-validator';
 import { Trim } from '../../common/decorators/trim.decorator.js';
+import { CreateProductImageDto } from './create-product-image.dto.js';
+import { Type } from 'class-transformer';
 
 export class CreateProductDto {
   @Trim()
@@ -33,9 +37,9 @@ export class CreateProductDto {
   @Min(1)
   categoryId!: number;
 
-  @Trim()
   @IsOptional()
-  @IsString()
-  @MaxLength(500)
-  image?: string;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateProductImageDto)
+  images?: CreateProductImageDto[];
 }

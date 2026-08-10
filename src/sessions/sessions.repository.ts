@@ -7,18 +7,18 @@ import type { CreateSessionData } from './types/create-session-data.type.js';
 export class SessionsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  findById(id: number): Promise<Session | null> {
-    return this.prisma.session.findUnique({ where: { id } });
+  findById(sessionId: number): Promise<Session | null> {
+    return this.prisma.session.findUnique({ where: { id: sessionId } });
   }
 
   create(data: CreateSessionData): Promise<Session> {
     return this.prisma.session.create({ data });
   }
 
-  revokeById(id: number): Promise<Session> {
+  revokeById(sessionId: number): Promise<Session> {
     return this.prisma.session.update({
       where: {
-        id,
+        id: sessionId,
       },
       data: {
         revokedAt: new Date(),

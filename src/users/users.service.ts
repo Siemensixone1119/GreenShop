@@ -34,12 +34,12 @@ export class UsersService {
     return this.userRepository.findAuthByEmail(email);
   }
 
-  async findById(id: number): Promise<PublicUser> {
-    if (id <= 0) {
+  async findById(userId: number): Promise<PublicUser> {
+    if (userId <= 0) {
       throw new BadRequestException('Id не передан');
     }
 
-    const user = await this.userRepository.findById(id);
+    const user = await this.userRepository.findById(userId);
 
     if (!user) {
       throw new NotFoundException('Пользователь с таким Id не найден');
@@ -78,20 +78,20 @@ export class UsersService {
     });
   }
 
-  async update(id: number, data: UpdateUserData): Promise<PublicUser> {
+  async update(userId: number, data: UpdateUserData): Promise<PublicUser> {
     const email = data.email?.trim() ?? null;
     const name = data.name?.trim() ?? null;
 
-    if (id <= 0) {
+    if (userId <= 0) {
       throw new BadRequestException('Id не передан');
     }
 
-    await this.findById(id);
+    await this.findById(userId);
     const updateData: UpdateUserData = {};
 
     if (email) {
       const existUser = await this.findByEmail(email);
-      if (existUser && existUser?.id !== id) {
+      if (existUser && existUser.id !== userId) {
         throw new ConflictException(
           'Пользователь с таким email уже существует',
         );
@@ -103,16 +103,16 @@ export class UsersService {
       updateData.name = name;
     }
 
-    return this.userRepository.update(id, updateData);
+    return this.userRepository.update(userId, updateData);
   }
 
-  async delete(id: number): Promise<PublicUser> {
-    if (id <= 0) {
+  async delete(userId: number): Promise<PublicUser> {
+    if (userId <= 0) {
       throw new BadRequestException('Id не передан');
     }
 
-    await this.findById(id);
+    await this.findById(userId);
 
-    return this.userRepository.delete(id);
+    return this.userRepository.delete(userId);
   }
 }

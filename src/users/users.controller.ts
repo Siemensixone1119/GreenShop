@@ -23,8 +23,8 @@ export class UsersController {
   }
 
   @Roles(['ADMIN'])
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<PublicUser> {
-    return this.userService.findById(id);
+  @Get(':userId')
+  findOne(@Param('userId', ParseIntPipe) userId: number): Promise<PublicUser> {
+    return this.userService.findById(userId);
   }
 }

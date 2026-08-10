@@ -39,7 +39,7 @@ export class OrderService {
       productName: item.product.name,
       price: item.product.price,
       quantity: item.quantity,
-      image: item.product.image,
+      image: item.product.images[0]?.url ?? null,
     }));
 
     const totalPrice = items.reduce(

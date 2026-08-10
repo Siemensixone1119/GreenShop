@@ -36,10 +36,4 @@ export class UpdateProductDto {
   @IsInt()
   @Min(1)
   categoryId?: number;
-
-  @Trim()
-  @IsOptional()
-  @IsString()
-  @MaxLength(500)
-  image?: string;
 }

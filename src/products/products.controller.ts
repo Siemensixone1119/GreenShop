@@ -13,49 +13,84 @@ import {
 import { ProductsService } from './products.service.js';
 import { CreateProductDto } from './dto/create-product.dto.js';
 import { UpdateProductDto } from './dto/update-product.dto.js';
-import type { Product } from '../../generated/prisma/client.js';
-import type { ProductWithCategory } from './types/product-with-category.type.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import type { ProductWithDetails } from './types/product-with-detail.type.js';
+import { CreateProductImageDto } from './dto/create-product-image.dto.js';
+import type { ProductImage } from '../../generated/prisma/client.js';
+import { UpdateProductImageDto } from './dto/update-product-image.dto.js';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  findAll(@Query('search') search?: string): Promise<ProductWithCategory[]> {
+  findAll(@Query('search') search?: string): Promise<ProductWithDetails[]> {
     return this.productsService.findAll(search);
   }
 
-  @Get(':id')
+  @Get(':productId')
   findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<ProductWithCategory | null> {
-    return this.productsService.findOne(id);
+    @Param('productId', ParseIntPipe) productId: number,
+  ): Promise<ProductWithDetails> {
+    return this.productsService.findOne(productId);
   }
 
   @Roles(['ADMIN'])
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
-  create(@Body() body: CreateProductDto): Promise<Product> {
+  create(@Body() body: CreateProductDto): Promise<ProductWithDetails> {
     return this.productsService.create(body);
   }
 
   @Roles(['ADMIN'])
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Patch(':id')
+  @Patch(':productId')
   update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('productId', ParseIntPipe) productId: number,
     @Body() body: UpdateProductDto,
-  ): Promise<Product> {
-    return this.productsService.update(id, body);
+  ): Promise<ProductWithDetails> {
+    return this.productsService.update(productId, body);
   }
 
   @Roles(['ADMIN'])
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Delete(':id')
-  delete(@Param('id', ParseIntPipe) id: number): Promise<Product> {
-    return this.productsService.delete(id);
+  @Delete(':productId')
+  delete(
+    @Param('productId', ParseIntPipe) productId: number,
+  ): Promise<ProductWithDetails> {
+    return this.productsService.delete(productId);
+  }
+
+  @Roles(['ADMIN'])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Post(':productId/images')
+  addImage(
+    @Param('productId', ParseIntPipe) productId: number,
+    @Body() body: CreateProductImageDto,
+  ): Promise<ProductImage> {
+    return this.productsService.addImage(productId, body);
+  }
+
+  @Roles(['ADMIN'])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Patch(':productId/images/:imageId')
+  updateImage(
+    @Param('productId', ParseIntPipe) productId: number,
+    @Param('imageId', ParseIntPipe) imageId: number,
+    @Body() body: UpdateProductImageDto,
+  ): Promise<ProductImage> {
+    return this.productsService.updateImage(productId, imageId, body);
+  }
+
+  @Roles(['ADMIN'])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Delete(':productId/images/:imageId')
+  deleteImage(
+    @Param('productId', ParseIntPipe) productId: number,
+    @Param('imageId', ParseIntPipe) imageId: number,
+  ): Promise<ProductImage> {
+    return this.productsService.deleteImage(productId, imageId);
   }
 }

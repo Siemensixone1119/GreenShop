@@ -31,12 +31,12 @@ export class OrderController {
   }
 
   @Roles(['USER', 'ADMIN'])
-  @Get('my/:id')
+  @Get('my/:orderId')
   getMyOrder(
     @CurrentUser() user: PublicUser,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('orderId', ParseIntPipe) orderId: number,
   ): Promise<OrderWithItems> {
-    return this.orderService.getMyOrder(user.id, id);
+    return this.orderService.getMyOrder(user.id, orderId);
   }
 
   @Roles(['ADMIN'])
@@ -46,9 +46,11 @@ export class OrderController {
   }
 
   @Roles(['ADMIN'])
-  @Get(':id')
-  getOrderById(@Param('id', ParseIntPipe) id: number): Promise<OrderWithItems> {
-    return this.orderService.getOrderById(id);
+  @Get(':orderId')
+  getOrderById(
+    @Param('orderId', ParseIntPipe) orderId: number,
+  ): Promise<OrderWithItems> {
+    return this.orderService.getOrderById(orderId);
   }
 
   @Roles(['USER', 'ADMIN'])
@@ -61,11 +63,11 @@ export class OrderController {
   }
 
   @Roles(['ADMIN'])
-  @Patch(':id/status')
+  @Patch(':orderId/status')
   updateStatus(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('orderId', ParseIntPipe) orderId: number,
     @Body() data: UpdateOrderStatusDto,
   ): Promise<Order> {
-    return this.orderService.updateStatus(id, data.status);
+    return this.orderService.updateStatus(orderId, data.status);
   }
 }

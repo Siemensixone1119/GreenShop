@@ -1,7 +1,8 @@
 import { Prisma } from '../../../generated/prisma/client.js';
 
-export type ProductWithCategory = Prisma.ProductGetPayload<{
+export type ProductWithDetails = Prisma.ProductGetPayload<{
   include: {
     category: true;
+    images: true;
   };
 }>;

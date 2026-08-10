@@ -20,13 +20,13 @@ model Product {
   price       Int
   stock       Int      @default(0)
   categoryId  Int
-  image       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  category   Category    @relation(fields: [categoryId], references: [id])
+  category   Category       @relation(fields: [categoryId], references: [id])
   cartItems  CartItem[]
   orderItems OrderItem[]
+  images     ProductImage[]
 }
 
 model Category {
@@ -61,7 +61,7 @@ model User {
   updatedAt    DateTime @updatedAt
 
   sessions Session[]
-  cart    Cart?
+  cart     Cart?
   orders   Order[]
 }
 
@@ -107,7 +107,7 @@ model CartItem {
 
 model Order {
   id         Int         @id @default(autoincrement())
-  userId     Int
+  userId     Int?
   status     OrderStatus @default(NEW)
   totalPrice Int
   createdAt  DateTime    @default(now())
@@ -124,7 +124,7 @@ model Order {
   email      String
 
   items OrderItem[]
-  user  User        @relation(fields: [userId], references: [id])
+  user  User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([userId])
 }
@@ -143,4 +143,16 @@ model OrderItem {
 
   @@index([orderId])
   @@index([productId])
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  url       String
+  alt       String?
+  position  Int
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, position])
 }

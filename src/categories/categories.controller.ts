@@ -27,9 +27,11 @@ export class CategoriesController {
     return this.categoriesService.findAll(search);
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<Category> {
-    return this.categoriesService.findOne(id);
+  @Get(':categoryId')
+  findOne(
+    @Param('categoryId', ParseIntPipe) categoryId: number,
+  ): Promise<Category> {
+    return this.categoriesService.findOne(categoryId);
   }
 
   @Roles(['ADMIN'])
@@ -41,18 +43,20 @@ export class CategoriesController {
 
   @Roles(['ADMIN'])
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Patch(':id')
+  @Patch(':categoryId')
   update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('categoryId', ParseIntPipe) categoryId: number,
     @Body() body: UpdateCategoryDto,
   ): Promise<Category> {
-    return this.categoriesService.update(id, body);
+    return this.categoriesService.update(categoryId, body);
   }
 
   @Roles(['ADMIN'])
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Delete(':id')
-  delete(@Param('id', ParseIntPipe) id: number): Promise<Category> {
-    return this.categoriesService.delete(id);
+  @Delete(':categoryId')
+  delete(
+    @Param('categoryId', ParseIntPipe) categoryId: number,
+  ): Promise<Category> {
+    return this.categoriesService.delete(categoryId);
   }
 }

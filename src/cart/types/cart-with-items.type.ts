@@ -4,7 +4,11 @@ export type CartWithItems = Prisma.CartGetPayload<{
   include: {
     items: {
       include: {
-        product: true;
+        product: {
+          include: {
+            images: true;
+          };
+        };
       };
     };
   };

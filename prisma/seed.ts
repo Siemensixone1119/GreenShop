@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { PrismaClient } from '../generated/prisma/client.js';
 import { PrismaPg } from '@prisma/adapter-pg';
-import * as bcrypt from "bcrypt";
+import * as bcrypt from 'bcrypt';
 
 const databaseUrl = process.env['DATABASE_URL'];
 
@@ -21,325 +21,503 @@ async function main() {
   await prisma.cartItem.deleteMany();
   await prisma.session.deleteMany();
   await prisma.cart.deleteMany();
+  await prisma.orderItem.deleteMany();
+  await prisma.order.deleteMany();
   await prisma.product.deleteMany();
   await prisma.category.deleteMany();
   await prisma.user.deleteMany();
 
   const indoorCategory = await prisma.category.create({
-    data: { name: "Комнатные растения" },
+    data: { name: 'Комнатные растения' },
   });
 
   const succulentsCategory = await prisma.category.create({
-    data: { name: "Суккуленты" },
+    data: { name: 'Суккуленты' },
   });
 
   const cactiCategory = await prisma.category.create({
-    data: { name: "Кактусы" },
+    data: { name: 'Кактусы' },
   });
 
   const floweringCategory = await prisma.category.create({
-    data: { name: "Цветущие растения" },
+    data: { name: 'Цветущие растения' },
   });
 
   const foliageCategory = await prisma.category.create({
-    data: { name: "Декоративно-лиственные" },
+    data: { name: 'Декоративно-лиственные' },
   });
 
   const palmsCategory = await prisma.category.create({
-    data: { name: "Пальмы" },
+    data: { name: 'Пальмы' },
   });
 
   const ficusCategory = await prisma.category.create({
-    data: { name: "Фикусы" },
+    data: { name: 'Фикусы' },
   });
 
   const orchidsCategory = await prisma.category.create({
-    data: { name: "Орхидеи" },
+    data: { name: 'Орхидеи' },
   });
 
   const fernsCategory = await prisma.category.create({
-    data: { name: "Папоротники" },
+    data: { name: 'Папоротники' },
   });
 
   const bonsaiCategory = await prisma.category.create({
-    data: { name: "Бонсай" },
+    data: { name: 'Бонсай' },
   });
 
   await prisma.category.create({
-    data: { name: "Грунты и удобрения" },
+    data: { name: 'Грунты и удобрения' },
   });
 
   await prisma.category.create({
-    data: { name: "Кашпо и аксессуары" },
+    data: { name: 'Кашпо и аксессуары' },
   });
 
   const monstera = await prisma.product.create({
     data: {
-      name: "Монстера Делициоза",
-      description: "Тропическое растение с крупными резными листьями.",
+      name: 'Монстера Делициоза',
+      description: 'Тропическое растение с крупными резными листьями.',
       price: 2490,
       stock: 18,
-      image: "/images/products/monstera-deliciosa.jpg",
       categoryId: foliageCategory.id,
     },
   });
 
   const calathea = await prisma.product.create({
     data: {
-      name: "Калатея Орбифолия",
-      description: "Декоративное растение с широкими полосатыми листьями.",
+      name: 'Калатея Орбифолия',
+      description: 'Декоративное растение с широкими полосатыми листьями.',
       price: 2190,
       stock: 11,
-      image: "/images/products/calathea-orbifolia.jpg",
       categoryId: foliageCategory.id,
     },
   });
 
   const sansevieria = await prisma.product.create({
     data: {
-      name: "Сансевиерия Лауренти",
-      description: "Неприхотливое растение с плотными листьями.",
+      name: 'Сансевиерия Лауренти',
+      description: 'Неприхотливое растение с плотными листьями.',
       price: 1390,
       stock: 25,
-      image: "/images/products/sansevieria-laurenti.jpg",
       categoryId: indoorCategory.id,
     },
   });
 
   const zamioculcas = await prisma.product.create({
     data: {
-      name: "Замиокулькас",
-      description: "Теневыносливое растение с глянцевыми тёмными листьями.",
+      name: 'Замиокулькас',
+      description: 'Теневыносливое растение с глянцевыми тёмными листьями.',
       price: 1890,
       stock: 16,
-      image: "/images/products/zamioculcas.jpg",
       categoryId: indoorCategory.id,
     },
   });
 
   const echeveria = await prisma.product.create({
     data: {
-      name: "Эхеверия",
-      description: "Компактный суккулент с симметричной розеткой листьев.",
+      name: 'Эхеверия',
+      description: 'Компактный суккулент с симметричной розеткой листьев.',
       price: 590,
       stock: 32,
-      image: "/images/products/echeveria.jpg",
       categoryId: succulentsCategory.id,
     },
   });
 
   const crassula = await prisma.product.create({
     data: {
-      name: "Крассула Овата",
-      description: "Суккулент, известный также как денежное дерево.",
+      name: 'Крассула Овата',
+      description: 'Суккулент, известный также как денежное дерево.',
       price: 890,
       stock: 21,
-      image: "/images/products/crassula-ovata.jpg",
       categoryId: succulentsCategory.id,
     },
   });
 
   const echinocactus = await prisma.product.create({
     data: {
-      name: "Эхинокактус Грузона",
+      name: 'Эхинокактус Грузона',
       description:
-        "Шаровидный кактус с выраженными рёбрами и золотистыми колючками.",
+        'Шаровидный кактус с выраженными рёбрами и золотистыми колючками.',
       price: 990,
       stock: 17,
-      image: "/images/products/echinocactus-grusonii.jpg",
       categoryId: cactiCategory.id,
     },
   });
 
   const opuntia = await prisma.product.create({
     data: {
-      name: "Опунция",
-      description: "Кактус с плоскими сегментированными побегами.",
+      name: 'Опунция',
+      description: 'Кактус с плоскими сегментированными побегами.',
       price: 790,
       stock: 20,
-      image: "/images/products/opuntia.jpg",
       categoryId: cactiCategory.id,
     },
   });
 
   const anthurium = await prisma.product.create({
     data: {
-      name: "Антуриум Андре",
-      description: "Цветущее растение с яркими красными соцветиями.",
+      name: 'Антуриум Андре',
+      description: 'Цветущее растение с яркими красными соцветиями.',
       price: 2290,
       stock: 14,
-      image: "/images/products/anthurium-andre.jpg",
       categoryId: floweringCategory.id,
     },
   });
 
   const spathiphyllum = await prisma.product.create({
     data: {
-      name: "Спатифиллум",
-      description: "Комнатное растение с белыми цветами и тёмной листвой.",
+      name: 'Спатифиллум',
+      description: 'Комнатное растение с белыми цветами и тёмной листвой.',
       price: 1590,
       stock: 19,
-      image: "/images/products/spathiphyllum.jpg",
       categoryId: floweringCategory.id,
     },
   });
 
   const areca = await prisma.product.create({
     data: {
-      name: "Пальма Арека",
-      description: "Комнатная пальма с длинными перистыми листьями.",
+      name: 'Пальма Арека',
+      description: 'Комнатная пальма с длинными перистыми листьями.',
       price: 3490,
       stock: 8,
-      image: "/images/products/areca-palm.jpg",
       categoryId: palmsCategory.id,
     },
   });
 
   const ficusLyrata = await prisma.product.create({
     data: {
-      name: "Фикус Лирата",
-      description: "Высокое растение с крупными листьями скрипичной формы.",
+      name: 'Фикус Лирата',
+      description: 'Высокое растение с крупными листьями скрипичной формы.',
       price: 3990,
       stock: 9,
-      image: "/images/products/ficus-lyrata.jpg",
       categoryId: ficusCategory.id,
     },
   });
 
   const phalaenopsis = await prisma.product.create({
     data: {
-      name: "Орхидея Фаленопсис",
-      description: "Популярная орхидея с продолжительным цветением.",
+      name: 'Орхидея Фаленопсис',
+      description: 'Популярная орхидея с продолжительным цветением.',
       price: 1990,
       stock: 13,
-      image: "/images/products/phalaenopsis.jpg",
       categoryId: orchidsCategory.id,
     },
   });
 
   const nephrolepis = await prisma.product.create({
     data: {
-      name: "Нефролепис Бостон",
-      description: "Пышный папоротник с длинными изогнутыми вайями.",
+      name: 'Нефролепис Бостон',
+      description: 'Пышный папоротник с длинными изогнутыми вайями.',
       price: 1490,
       stock: 15,
-      image: "/images/products/nephrolepis-boston.jpg",
       categoryId: fernsCategory.id,
     },
   });
 
   const ficusGinseng = await prisma.product.create({
     data: {
-      name: "Бонсай Фикус Гинсенг",
-      description: "Миниатюрный фикус с выразительным утолщённым стволом.",
+      name: 'Бонсай Фикус Гинсенг',
+      description: 'Миниатюрный фикус с выразительным утолщённым стволом.',
       price: 2890,
       stock: 10,
-      image: "/images/products/ficus-ginseng-bonsai.jpg",
       categoryId: bonsaiCategory.id,
     },
   });
 
-  const passwordHash = await bcrypt.hash("GreenShop123!", 10);
+  await prisma.productImage.createMany({
+    data: [
+      {
+        productId: monstera.id,
+        url: '/images/products/monstera-deliciosa.jpg',
+        alt: 'Монстера Делициоза',
+        position: 0,
+      },
+      {
+        productId: monstera.id,
+        url: '/images/products/monstera-deliciosa-2.jpg',
+        alt: 'Листья монстеры',
+        position: 1,
+      },
+      {
+        productId: monstera.id,
+        url: '/images/products/monstera-deliciosa-3.jpg',
+        alt: 'Монстера в интерьере',
+        position: 2,
+      },
+      {
+        productId: calathea.id,
+        url: '/images/products/calathea-orbifolia.jpg',
+        alt: 'Калатея Орбифолия',
+        position: 0,
+      },
+      {
+        productId: calathea.id,
+        url: '/images/products/calathea-orbifolia-2.jpg',
+        alt: 'Листья калатеи',
+        position: 1,
+      },
+      {
+        productId: sansevieria.id,
+        url: '/images/products/sansevieria-laurenti.jpg',
+        alt: 'Сансевиерия Лауренти',
+        position: 0,
+      },
+      {
+        productId: sansevieria.id,
+        url: '/images/products/sansevieria-laurenti-2.jpg',
+        alt: 'Сансевиерия в горшке',
+        position: 1,
+      },
+      {
+        productId: zamioculcas.id,
+        url: '/images/products/zamioculcas.jpg',
+        alt: 'Замиокулькас',
+        position: 0,
+      },
+      {
+        productId: zamioculcas.id,
+        url: '/images/products/zamioculcas-2.jpg',
+        alt: 'Замиокулькас в интерьере',
+        position: 1,
+      },
+      {
+        productId: echeveria.id,
+        url: '/images/products/echeveria.jpg',
+        alt: 'Эхеверия',
+        position: 0,
+      },
+      {
+        productId: echeveria.id,
+        url: '/images/products/echeveria-2.jpg',
+        alt: 'Розетка эхеверии',
+        position: 1,
+      },
+      {
+        productId: crassula.id,
+        url: '/images/products/crassula-ovata.jpg',
+        alt: 'Крассула Овата',
+        position: 0,
+      },
+      {
+        productId: crassula.id,
+        url: '/images/products/crassula-ovata-2.jpg',
+        alt: 'Крассула в горшке',
+        position: 1,
+      },
+      {
+        productId: echinocactus.id,
+        url: '/images/products/echinocactus-grusonii.jpg',
+        alt: 'Эхинокактус Грузона',
+        position: 0,
+      },
+      {
+        productId: echinocactus.id,
+        url: '/images/products/echinocactus-grusonii-2.jpg',
+        alt: 'Колючки эхинокактуса',
+        position: 1,
+      },
+      {
+        productId: opuntia.id,
+        url: '/images/products/opuntia.jpg',
+        alt: 'Опунция',
+        position: 0,
+      },
+      {
+        productId: opuntia.id,
+        url: '/images/products/opuntia-2.jpg',
+        alt: 'Побеги опунции',
+        position: 1,
+      },
+      {
+        productId: anthurium.id,
+        url: '/images/products/anthurium-andre.jpg',
+        alt: 'Антуриум Андре',
+        position: 0,
+      },
+      {
+        productId: anthurium.id,
+        url: '/images/products/anthurium-andre-2.jpg',
+        alt: 'Цветок антуриума',
+        position: 1,
+      },
+      {
+        productId: spathiphyllum.id,
+        url: '/images/products/spathiphyllum.jpg',
+        alt: 'Спатифиллум',
+        position: 0,
+      },
+      {
+        productId: spathiphyllum.id,
+        url: '/images/products/spathiphyllum-2.jpg',
+        alt: 'Цветок спатифиллума',
+        position: 1,
+      },
+      {
+        productId: areca.id,
+        url: '/images/products/areca-palm.jpg',
+        alt: 'Пальма Арека',
+        position: 0,
+      },
+      {
+        productId: areca.id,
+        url: '/images/products/areca-palm-2.jpg',
+        alt: 'Листья пальмы Арека',
+        position: 1,
+      },
+      {
+        productId: ficusLyrata.id,
+        url: '/images/products/ficus-lyrata.jpg',
+        alt: 'Фикус Лирата',
+        position: 0,
+      },
+      {
+        productId: ficusLyrata.id,
+        url: '/images/products/ficus-lyrata-2.jpg',
+        alt: 'Листья фикуса Лирата',
+        position: 1,
+      },
+      {
+        productId: phalaenopsis.id,
+        url: '/images/products/phalaenopsis.jpg',
+        alt: 'Орхидея Фаленопсис',
+        position: 0,
+      },
+      {
+        productId: phalaenopsis.id,
+        url: '/images/products/phalaenopsis-2.jpg',
+        alt: 'Цветы орхидеи',
+        position: 1,
+      },
+      {
+        productId: nephrolepis.id,
+        url: '/images/products/nephrolepis-boston.jpg',
+        alt: 'Нефролепис Бостон',
+        position: 0,
+      },
+      {
+        productId: nephrolepis.id,
+        url: '/images/products/nephrolepis-boston-2.jpg',
+        alt: 'Листья нефролеписа',
+        position: 1,
+      },
+      {
+        productId: ficusGinseng.id,
+        url: '/images/products/ficus-ginseng-bonsai.jpg',
+        alt: 'Бонсай Фикус Гинсенг',
+        position: 0,
+      },
+      {
+        productId: ficusGinseng.id,
+        url: '/images/products/ficus-ginseng-bonsai-2.jpg',
+        alt: 'Ствол фикуса Гинсенг',
+        position: 1,
+      },
+    ],
+  });
+
+  const passwordHash = await bcrypt.hash('GreenShop123!', 10);
 
   const admin = await prisma.user.create({
     data: {
-      email: "admin@greenshop.test",
+      email: 'admin@greenshop.test',
       passwordHash,
-      name: "Администратор",
-      role: "ADMIN",
+      name: 'Администратор',
+      role: 'ADMIN',
     },
   });
 
   const manager = await prisma.user.create({
     data: {
-      email: "manager@greenshop.test",
+      email: 'manager@greenshop.test',
       passwordHash,
-      name: "Менеджер",
-      role: "ADMIN",
+      name: 'Менеджер',
+      role: 'ADMIN',
     },
   });
 
   const alexandra = await prisma.user.create({
     data: {
-      email: "alexandra@greenshop.test",
+      email: 'alexandra@greenshop.test',
       passwordHash,
-      name: "Александра",
+      name: 'Александра',
     },
   });
 
   const ivan = await prisma.user.create({
     data: {
-      email: "ivan@greenshop.test",
+      email: 'ivan@greenshop.test',
       passwordHash,
-      name: "Иван",
+      name: 'Иван',
     },
   });
 
   const maria = await prisma.user.create({
     data: {
-      email: "maria@greenshop.test",
+      email: 'maria@greenshop.test',
       passwordHash,
-      name: "Мария",
+      name: 'Мария',
     },
   });
 
   const dmitry = await prisma.user.create({
     data: {
-      email: "dmitry@greenshop.test",
+      email: 'dmitry@greenshop.test',
       passwordHash,
-      name: "Дмитрий",
+      name: 'Дмитрий',
     },
   });
 
   const elena = await prisma.user.create({
     data: {
-      email: "elena@greenshop.test",
+      email: 'elena@greenshop.test',
       passwordHash,
-      name: "Елена",
+      name: 'Елена',
     },
   });
 
   const nikita = await prisma.user.create({
     data: {
-      email: "nikita@greenshop.test",
+      email: 'nikita@greenshop.test',
       passwordHash,
-      name: "Никита",
+      name: 'Никита',
     },
   });
 
   const olga = await prisma.user.create({
     data: {
-      email: "olga@greenshop.test",
+      email: 'olga@greenshop.test',
       passwordHash,
-      name: "Ольга",
+      name: 'Ольга',
     },
   });
 
   const sergey = await prisma.user.create({
     data: {
-      email: "sergey@greenshop.test",
+      email: 'sergey@greenshop.test',
       passwordHash,
-      name: "Сергей",
+      name: 'Сергей',
     },
   });
 
   const anna = await prisma.user.create({
     data: {
-      email: "anna@greenshop.test",
+      email: 'anna@greenshop.test',
       passwordHash,
-      name: "Анна",
+      name: 'Анна',
     },
   });
 
   const pavel = await prisma.user.create({
     data: {
-      email: "pavel@greenshop.test",
+      email: 'pavel@greenshop.test',
       passwordHash,
-      name: "Павел",
+      name: 'Павел',
     },
   });
 
-  const refreshHash = await bcrypt.hash("test-refresh-token", 10);
+  const refreshHash = await bcrypt.hash('test-refresh-token', 10);
   const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
   await prisma.session.createMany({
@@ -435,8 +613,8 @@ async function main() {
     ],
   });
 
-  console.log("Тестовые данные созданы");
-  console.log("Пароль пользователей: GreenShop123!");
+  console.log('Тестовые данные созданы');
+  console.log('Пароль пользователей: GreenShop123!');
 }
 
 main()
