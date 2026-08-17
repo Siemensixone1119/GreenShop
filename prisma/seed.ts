@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { PrismaClient } from '../generated/prisma/client.js';
+import { PrismaClient, Size } from '../generated/prisma/client.js';
 import { PrismaPg } from '@prisma/adapter-pg';
 import * as bcrypt from 'bcrypt';
 
@@ -16,6 +16,61 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({
   adapter,
 });
+
+async function createProductWithVariants(data: {
+  name: string;
+  description: string;
+  categoryId: number;
+  skuBase: string;
+  basePrice: number;
+  baseStock: number;
+}) {
+  return prisma.product.create({
+    data: {
+      name: data.name,
+      description: data.description,
+      categoryId: data.categoryId,
+      variants: {
+        create: [
+          {
+            size: Size.SMALL,
+            price: data.basePrice,
+            stock: data.baseStock,
+            sku: `${data.skuBase}01`,
+          },
+          {
+            size: Size.MEDIUM,
+            price: data.basePrice + 500,
+            stock: Math.max(data.baseStock - 4, 1),
+            sku: `${data.skuBase}02`,
+          },
+          {
+            size: Size.LARGE,
+            price: data.basePrice + 1000,
+            stock: Math.max(data.baseStock - 8, 1),
+            sku: `${data.skuBase}03`,
+          },
+        ],
+      },
+    },
+    include: {
+      variants: true,
+    },
+  });
+}
+
+function getVariant(
+  product: { variants: Array<{ id: number; size: Size }> },
+  size: Size,
+) {
+  const variant = product.variants.find((item) => item.size === size);
+
+  if (!variant) {
+    throw new Error(`У товара отсутствует вариант размера ${size}`);
+  }
+
+  return variant;
+}
 
 async function main() {
   await prisma.cartItem.deleteMany();
@@ -75,155 +130,140 @@ async function main() {
     data: { name: 'Кашпо и аксессуары' },
   });
 
-  const monstera = await prisma.product.create({
-    data: {
-      name: 'Монстера Делициоза',
-      description: 'Тропическое растение с крупными резными листьями.',
-      price: 2490,
-      stock: 18,
-      categoryId: foliageCategory.id,
-    },
+  const monstera = await createProductWithVariants({
+    name: 'Монстера Делициоза',
+    description: 'Тропическое растение с крупными резными листьями.',
+    categoryId: foliageCategory.id,
+    skuBase: '10000000001',
+    basePrice: 2490,
+    baseStock: 18,
   });
 
-  const calathea = await prisma.product.create({
-    data: {
-      name: 'Калатея Орбифолия',
-      description: 'Декоративное растение с широкими полосатыми листьями.',
-      price: 2190,
-      stock: 11,
-      categoryId: foliageCategory.id,
-    },
+  const calathea = await createProductWithVariants({
+    name: 'Калатея Орбифолия',
+    description: 'Декоративное растение с широкими полосатыми листьями.',
+    categoryId: foliageCategory.id,
+    skuBase: '10000000002',
+    basePrice: 2190,
+    baseStock: 11,
   });
 
-  const sansevieria = await prisma.product.create({
-    data: {
-      name: 'Сансевиерия Лауренти',
-      description: 'Неприхотливое растение с плотными листьями.',
-      price: 1390,
-      stock: 25,
-      categoryId: indoorCategory.id,
-    },
+  const sansevieria = await createProductWithVariants({
+    name: 'Сансевиерия Лауренти',
+    description: 'Неприхотливое растение с плотными листьями.',
+    categoryId: indoorCategory.id,
+    skuBase: '10000000003',
+    basePrice: 1390,
+    baseStock: 25,
   });
 
-  const zamioculcas = await prisma.product.create({
-    data: {
-      name: 'Замиокулькас',
-      description: 'Теневыносливое растение с глянцевыми тёмными листьями.',
-      price: 1890,
-      stock: 16,
-      categoryId: indoorCategory.id,
-    },
+  const zamioculcas = await createProductWithVariants({
+    name: 'Замиокулькас',
+    description: 'Теневыносливое растение с глянцевыми тёмными листьями.',
+    categoryId: indoorCategory.id,
+    skuBase: '10000000004',
+    basePrice: 1890,
+    baseStock: 16,
   });
 
-  const echeveria = await prisma.product.create({
-    data: {
-      name: 'Эхеверия',
-      description: 'Компактный суккулент с симметричной розеткой листьев.',
-      price: 590,
-      stock: 32,
-      categoryId: succulentsCategory.id,
-    },
+  const echeveria = await createProductWithVariants({
+    name: 'Эхеверия',
+    description: 'Компактный суккулент с симметричной розеткой листьев.',
+    categoryId: succulentsCategory.id,
+    skuBase: '10000000005',
+    basePrice: 590,
+    baseStock: 32,
   });
 
-  const crassula = await prisma.product.create({
-    data: {
-      name: 'Крассула Овата',
-      description: 'Суккулент, известный также как денежное дерево.',
-      price: 890,
-      stock: 21,
-      categoryId: succulentsCategory.id,
-    },
+  const crassula = await createProductWithVariants({
+    name: 'Крассула Овата',
+    description: 'Суккулент, известный также как денежное дерево.',
+    categoryId: succulentsCategory.id,
+    skuBase: '10000000006',
+    basePrice: 890,
+    baseStock: 21,
   });
 
-  const echinocactus = await prisma.product.create({
-    data: {
-      name: 'Эхинокактус Грузона',
-      description:
-        'Шаровидный кактус с выраженными рёбрами и золотистыми колючками.',
-      price: 990,
-      stock: 17,
-      categoryId: cactiCategory.id,
-    },
+  const echinocactus = await createProductWithVariants({
+    name: 'Эхинокактус Грузона',
+    description:
+      'Шаровидный кактус с выраженными рёбрами и золотистыми колючками.',
+    categoryId: cactiCategory.id,
+    skuBase: '10000000007',
+    basePrice: 990,
+    baseStock: 17,
   });
 
-  const opuntia = await prisma.product.create({
-    data: {
-      name: 'Опунция',
-      description: 'Кактус с плоскими сегментированными побегами.',
-      price: 790,
-      stock: 20,
-      categoryId: cactiCategory.id,
-    },
+  const opuntia = await createProductWithVariants({
+    name: 'Опунция',
+    description: 'Кактус с плоскими сегментированными побегами.',
+    categoryId: cactiCategory.id,
+    skuBase: '10000000008',
+    basePrice: 790,
+    baseStock: 20,
   });
 
-  const anthurium = await prisma.product.create({
-    data: {
-      name: 'Антуриум Андре',
-      description: 'Цветущее растение с яркими красными соцветиями.',
-      price: 2290,
-      stock: 14,
-      categoryId: floweringCategory.id,
-    },
+  const anthurium = await createProductWithVariants({
+    name: 'Антуриум Андре',
+    description: 'Цветущее растение с яркими красными соцветиями.',
+    categoryId: floweringCategory.id,
+    skuBase: '10000000009',
+    basePrice: 2290,
+    baseStock: 14,
   });
 
-  const spathiphyllum = await prisma.product.create({
-    data: {
-      name: 'Спатифиллум',
-      description: 'Комнатное растение с белыми цветами и тёмной листвой.',
-      price: 1590,
-      stock: 19,
-      categoryId: floweringCategory.id,
-    },
+  const spathiphyllum = await createProductWithVariants({
+    name: 'Спатифиллум',
+    description: 'Комнатное растение с белыми цветами и тёмной листвой.',
+    categoryId: floweringCategory.id,
+    skuBase: '10000000010',
+    basePrice: 1590,
+    baseStock: 19,
   });
 
-  const areca = await prisma.product.create({
-    data: {
-      name: 'Пальма Арека',
-      description: 'Комнатная пальма с длинными перистыми листьями.',
-      price: 3490,
-      stock: 8,
-      categoryId: palmsCategory.id,
-    },
+  const areca = await createProductWithVariants({
+    name: 'Пальма Арека',
+    description: 'Комнатная пальма с длинными перистыми листьями.',
+    categoryId: palmsCategory.id,
+    skuBase: '10000000011',
+    basePrice: 3490,
+    baseStock: 8,
   });
 
-  const ficusLyrata = await prisma.product.create({
-    data: {
-      name: 'Фикус Лирата',
-      description: 'Высокое растение с крупными листьями скрипичной формы.',
-      price: 3990,
-      stock: 9,
-      categoryId: ficusCategory.id,
-    },
+  const ficusLyrata = await createProductWithVariants({
+    name: 'Фикус Лирата',
+    description: 'Высокое растение с крупными листьями скрипичной формы.',
+    categoryId: ficusCategory.id,
+    skuBase: '10000000012',
+    basePrice: 3990,
+    baseStock: 9,
   });
 
-  const phalaenopsis = await prisma.product.create({
-    data: {
-      name: 'Орхидея Фаленопсис',
-      description: 'Популярная орхидея с продолжительным цветением.',
-      price: 1990,
-      stock: 13,
-      categoryId: orchidsCategory.id,
-    },
+  const phalaenopsis = await createProductWithVariants({
+    name: 'Орхидея Фаленопсис',
+    description: 'Популярная орхидея с продолжительным цветением.',
+    categoryId: orchidsCategory.id,
+    skuBase: '10000000013',
+    basePrice: 1990,
+    baseStock: 13,
   });
 
-  const nephrolepis = await prisma.product.create({
-    data: {
-      name: 'Нефролепис Бостон',
-      description: 'Пышный папоротник с длинными изогнутыми вайями.',
-      price: 1490,
-      stock: 15,
-      categoryId: fernsCategory.id,
-    },
+  const nephrolepis = await createProductWithVariants({
+    name: 'Нефролепис Бостон',
+    description: 'Пышный папоротник с длинными изогнутыми вайями.',
+    categoryId: fernsCategory.id,
+    skuBase: '10000000014',
+    basePrice: 1490,
+    baseStock: 15,
   });
 
-  const ficusGinseng = await prisma.product.create({
-    data: {
-      name: 'Бонсай Фикус Гинсенг',
-      description: 'Миниатюрный фикус с выразительным утолщённым стволом.',
-      price: 2890,
-      stock: 10,
-      categoryId: bonsaiCategory.id,
-    },
+  const ficusGinseng = await createProductWithVariants({
+    name: 'Бонсай Фикус Гинсенг',
+    description: 'Миниатюрный фикус с выразительным утолщённым стволом.',
+    categoryId: bonsaiCategory.id,
+    skuBase: '10000000015',
+    basePrice: 2890,
+    baseStock: 10,
   });
 
   await prisma.productImage.createMany({
@@ -585,31 +625,99 @@ async function main() {
     data: { userId: pavel.id },
   });
 
+  const monsteraMedium = getVariant(monstera, Size.MEDIUM);
+  const echeveriaSmall = getVariant(echeveria, Size.SMALL);
+  const calatheaMedium = getVariant(calathea, Size.MEDIUM);
+  const sansevieriaLarge = getVariant(sansevieria, Size.LARGE);
+  const nephrolepisSmall = getVariant(nephrolepis, Size.SMALL);
+  const zamioculcasMedium = getVariant(zamioculcas, Size.MEDIUM);
+  const crassulaSmall = getVariant(crassula, Size.SMALL);
+  const ficusGinsengMedium = getVariant(ficusGinseng, Size.MEDIUM);
+  const echinocactusSmall = getVariant(echinocactus, Size.SMALL);
+  const opuntiaSmall = getVariant(opuntia, Size.SMALL);
+  const anthuriumLarge = getVariant(anthurium, Size.LARGE);
+  const spathiphyllumMedium = getVariant(spathiphyllum, Size.MEDIUM);
+  const arecaLarge = getVariant(areca, Size.LARGE);
+  const ficusLyrataLarge = getVariant(ficusLyrata, Size.LARGE);
+  const phalaenopsisMedium = getVariant(phalaenopsis, Size.MEDIUM);
+
   await prisma.cartItem.createMany({
     data: [
-      { cartId: adminCart.id, productId: monstera.id, quantity: 1 },
-      { cartId: adminCart.id, productId: echeveria.id, quantity: 2 },
-      { cartId: managerCart.id, productId: calathea.id, quantity: 1 },
       {
-        cartId: alexandraCart.id,
-        productId: sansevieria.id,
+        cartId: adminCart.id,
+        productVariantId: monsteraMedium.id,
+        quantity: 1,
+      },
+      {
+        cartId: adminCart.id,
+        productVariantId: echeveriaSmall.id,
+        quantity: 2,
+      },
+      {
+        cartId: managerCart.id,
+        productVariantId: calatheaMedium.id,
         quantity: 1,
       },
       {
         cartId: alexandraCart.id,
-        productId: nephrolepis.id,
+        productVariantId: sansevieriaLarge.id,
+        quantity: 1,
+      },
+      {
+        cartId: alexandraCart.id,
+        productVariantId: nephrolepisSmall.id,
         quantity: 2,
       },
-      { cartId: ivanCart.id, productId: zamioculcas.id, quantity: 2 },
-      { cartId: mariaCart.id, productId: crassula.id, quantity: 1 },
-      { cartId: mariaCart.id, productId: ficusGinseng.id, quantity: 1 },
-      { cartId: dmitryCart.id, productId: echinocactus.id, quantity: 1 },
-      { cartId: elenaCart.id, productId: opuntia.id, quantity: 3 },
-      { cartId: nikitaCart.id, productId: anthurium.id, quantity: 1 },
-      { cartId: olgaCart.id, productId: spathiphyllum.id, quantity: 2 },
-      { cartId: sergeyCart.id, productId: areca.id, quantity: 1 },
-      { cartId: annaCart.id, productId: ficusLyrata.id, quantity: 1 },
-      { cartId: pavelCart.id, productId: phalaenopsis.id, quantity: 1 },
+      {
+        cartId: ivanCart.id,
+        productVariantId: zamioculcasMedium.id,
+        quantity: 2,
+      },
+      {
+        cartId: mariaCart.id,
+        productVariantId: crassulaSmall.id,
+        quantity: 1,
+      },
+      {
+        cartId: mariaCart.id,
+        productVariantId: ficusGinsengMedium.id,
+        quantity: 1,
+      },
+      {
+        cartId: dmitryCart.id,
+        productVariantId: echinocactusSmall.id,
+        quantity: 1,
+      },
+      {
+        cartId: elenaCart.id,
+        productVariantId: opuntiaSmall.id,
+        quantity: 3,
+      },
+      {
+        cartId: nikitaCart.id,
+        productVariantId: anthuriumLarge.id,
+        quantity: 1,
+      },
+      {
+        cartId: olgaCart.id,
+        productVariantId: spathiphyllumMedium.id,
+        quantity: 2,
+      },
+      {
+        cartId: sergeyCart.id,
+        productVariantId: arecaLarge.id,
+        quantity: 1,
+      },
+      {
+        cartId: annaCart.id,
+        productVariantId: ficusLyrataLarge.id,
+        quantity: 1,
+      },
+      {
+        cartId: pavelCart.id,
+        productVariantId: phalaenopsisMedium.id,
+        quantity: 1,
+      },
     ],
   });
 

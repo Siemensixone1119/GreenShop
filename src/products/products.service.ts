@@ -65,11 +65,13 @@ export class ProductsService {
     imageData: CreateProductImageDto,
   ): Promise<ProductImage> {
     const product = await this.findOne(productId);
-    product.images.forEach(image => {
-      if(image.position === imageData.position){
-        throw new ConflictException('Изображение с такой позицией уже существует')
+    product.images.forEach((image) => {
+      if (image.position === imageData.position) {
+        throw new ConflictException(
+          'Изображение с такой позицией уже существует',
+        );
       }
-    })
+    });
     return this.productsRepository.addImage(productId, imageData);
   }
 

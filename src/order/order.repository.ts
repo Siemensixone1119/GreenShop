@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { OrderWithItems } from './types/order-with-items.type.js';
+import type { OrderWithItems } from './types/order-with-items.type.js';
 import type { OrderStatus } from '../../generated/prisma/enums.js';
 import type { Order } from '../../generated/prisma/client.js';
 import type { CreateOrderData } from './types/create-order-data.type.js';
@@ -37,11 +37,12 @@ export class OrderRepository {
 
           items: {
             create: data.items.map((item) => ({
-              product: {
-                connect: { id: item.productId },
+              productVariant: {
+                connect: { id: item.productVariantId },
               },
               productName: item.productName,
               price: item.price,
+              size: item.size,
               quantity: item.quantity,
               image: item.image,
             })),
@@ -50,12 +51,12 @@ export class OrderRepository {
       });
 
       for (const item of data.items) {
-        const result = await tx.product.updateMany({
+        const result = await tx.productVariant.updateMany({
           data: {
             stock: { decrement: item.quantity },
           },
           where: {
-            id: item.productId,
+            id: item.productVariantId,
             stock: {
               gte: item.quantity,
             },

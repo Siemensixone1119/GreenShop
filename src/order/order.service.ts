@@ -27,19 +27,20 @@ export class OrderService {
       throw new BadRequestException('Корзина пуста');
     }
     cartItems.forEach((item) => {
-      if (item.product.stock < item.quantity) {
+      if (item.productVariant.stock < item.quantity) {
         throw new BadRequestException(
-          `Недостаточно товара "${item.product.name}": ${item.product.stock} шт.`,
+          `Недостаточно товара "${item.productVariant.product.name}": ${item.productVariant.stock} шт.`,
         );
       }
     });
 
     const items: CreateOrderItemData[] = cartItems.map((item) => ({
-      productId: item.productId,
-      productName: item.product.name,
-      price: item.product.price,
+      productVariantId: item.productVariant.id,
+      productName: item.productVariant.product.name,
+      price: item.productVariant.price,
+      size: item.productVariant.size,
       quantity: item.quantity,
-      image: item.product.images[0]?.url ?? null,
+      image: item.productVariant.product.images[0]?.url ?? null,
     }));
 
     const totalPrice = items.reduce(

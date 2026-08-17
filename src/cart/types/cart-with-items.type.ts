@@ -1,12 +1,16 @@
-import { Prisma } from '../../../generated/prisma/client.js';
+import type { Prisma } from '../../../generated/prisma/client.js';
 
 export type CartWithItems = Prisma.CartGetPayload<{
   include: {
     items: {
       include: {
-        product: {
+        productVariant: {
           include: {
-            images: true;
+            product: {
+              include: {
+                images: true;
+              };
+            };
           };
         };
       };

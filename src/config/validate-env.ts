@@ -1,10 +1,11 @@
 export function validateEnv(config: Record<string, unknown>) {
-  const envValues = [config['JWT_ACCESS_SECRET'], config['DATABASE_URL']];
   const port = Number(config['PORT']);
 
-  envValues.forEach((value) => {
+  const requiredEnvNames = ['JWT_ACCESS_SECRET', 'DATABASE_URL'] as const;
+  requiredEnvNames.forEach((name) => {
+    const value = config[name];
     if (typeof value !== 'string' || !value.trim()) {
-      throw new Error(`Некорректный ${value}`);
+      throw new Error(`Некорректная переменная окружения: ${name}`);
     }
   });
 

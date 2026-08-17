@@ -23,11 +23,15 @@ export class CartRepository {
       include: {
         items: {
           include: {
-            product: {
+            productVariant: {
               include: {
-                images: {
-                  orderBy: {
-                    position: 'asc',
+                product: {
+                  include: {
+                    images: {
+                      orderBy: {
+                        position: 'asc',
+                      },
+                    },
                   },
                 },
               },

@@ -6,12 +6,12 @@ import type { CartItem } from '../../generated/prisma/client.js';
 export class CartItemRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  findItem(cartId: number, productId: number): Promise<CartItem | null> {
+  findItem(cartId: number, productVariantId: number): Promise<CartItem | null> {
     return this.prisma.cartItem.findUnique({
       where: {
-        cartId_productId: {
+        cartId_productVariantId: {
           cartId,
-          productId,
+          productVariantId,
         },
       },
     });
@@ -19,13 +19,13 @@ export class CartItemRepository {
 
   create(
     cartId: number,
-    productId: number,
+    productVariantId: number,
     quantity: number,
   ): Promise<CartItem> {
     return this.prisma.cartItem.create({
       data: {
         cartId,
-        productId,
+        productVariantId,
         quantity,
       },
     });

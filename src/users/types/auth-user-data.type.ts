@@ -1,4 +1,4 @@
-import { PublicUser } from './public-user.type.js';
+import type { PublicUser } from './public-user.type.js';
 
 export type AuthUser = PublicUser & {
   passwordHash: string;

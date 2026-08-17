@@ -1,4 +1,4 @@
-import { CreateOrderItemData } from './create-order-item-data.type.js';
+import type { CreateOrderItemData } from './create-order-item-data.type.js';
 
 export type CreateOrderData = {
   totalPrice: number;

@@ -28,6 +28,7 @@ export class ProductsRepository {
             position: 'asc',
           },
         },
+        variants: true,
       },
     });
   }
@@ -44,16 +45,18 @@ export class ProductsRepository {
             position: 'asc',
           },
         },
+        variants: true,
       },
     });
   }
 
   create(data: CreateProductDto): Promise<ProductWithDetails> {
-    const { images, ...productData } = data;
+    const { images, variants, ...productData } = data;
     return this.prisma.product.create({
       data: {
         ...productData,
         images: images?.length ? { create: images } : undefined,
+        variants: { create: variants },
       },
       include: {
         category: true,
@@ -62,6 +65,7 @@ export class ProductsRepository {
             position: 'asc',
           },
         },
+        variants: true,
       },
     });
   }
@@ -80,6 +84,7 @@ export class ProductsRepository {
             position: 'asc',
           },
         },
+        variants: true,
       },
     });
   }
@@ -96,6 +101,7 @@ export class ProductsRepository {
             position: 'asc',
           },
         },
+        variants: true,
       },
     });
   }

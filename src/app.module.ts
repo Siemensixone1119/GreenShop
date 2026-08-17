@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CartModule } from './cart/cart.module.js';
 import { OrderModule } from './order/order.module.js';
 import { validateEnv } from './config/validate-env.js';
+import { ProductVariantModule } from './product-variant/product-variant.module.js';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { validateEnv } from './config/validate-env.js';
     }),
     CartModule,
     OrderModule,
+    ProductVariantModule,
   ],
   controllers: [AppController],
   providers: [AppService],

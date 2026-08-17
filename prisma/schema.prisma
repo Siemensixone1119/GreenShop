@@ -13,31 +13,6 @@ datasource db {
   provider = "postgresql"
 }
 
-model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?
-  price       Int
-  stock       Int      @default(0)
-  categoryId  Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  category   Category       @relation(fields: [categoryId], references: [id])
-  cartItems  CartItem[]
-  orderItems OrderItem[]
-  images     ProductImage[]
-}
-
-model Category {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  products Product[]
-}
-
 enum Role {
   USER
   ADMIN
@@ -49,6 +24,53 @@ enum OrderStatus {
   SHIPPED
   COMPLETED
   CANCELLED
+}
+
+enum Size {
+  EXTRA_SMALL
+  SMALL
+  MEDIUM
+  LARGE
+  EXTRA_LARGE
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  categoryId  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category Category         @relation(fields: [categoryId], references: [id])
+  variants ProductVariant[]
+  images   ProductImage[]
+}
+
+model ProductVariant {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  size      Size
+  price     Int
+  stock     Int      @default(0)
+  sku       String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@unique([productId, size])
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
 }
 
 model User {
@@ -90,19 +112,19 @@ model Cart {
 }
 
 model CartItem {
-  id        Int      @id @default(autoincrement())
-  cartId    Int
-  productId Int
-  quantity  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               Int      @id @default(autoincrement())
+  cartId           Int
+  productVariantId Int
+  quantity         Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cart           Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productVariant ProductVariant @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
 
-  @@unique([cartId, productId])
+  @@unique([cartId, productVariantId])
   @@index([cartId])
-  @@index([productId])
+  @@index([productVariantId])
 }
 
 model Order {
@@ -130,19 +152,20 @@ model Order {
 }
 
 model OrderItem {
-  id          Int     @id @default(autoincrement())
-  orderId     Int
-  productId   Int?
-  productName String
-  price       Int
-  quantity    Int
-  image       String?
+  id               Int     @id @default(autoincrement())
+  orderId          Int
+  productVariantId Int?
+  productName      String
+  price            Int
+  size             Size
+  quantity         Int
+  image            String?
 
-  order   Order    @relation(fields: [orderId], references: [id])
-  product Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  order          Order           @relation(fields: [orderId], references: [id])
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
 
   @@index([orderId])
-  @@index([productId])
+  @@index([productVariantId])
 }
 
 model ProductImage {
