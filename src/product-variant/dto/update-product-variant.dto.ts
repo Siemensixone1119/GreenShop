@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   Matches,
+  Max,
   Min,
 } from 'class-validator';
 import { Size } from '../../../generated/prisma/enums.js';
@@ -25,6 +26,12 @@ export class UpdateProductVariantDto {
   @IsInt()
   @Min(0)
   stock?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(99)
+  discountPercent?: number;
 
   @Trim()
   @IsOptional()

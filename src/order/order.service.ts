@@ -37,7 +37,10 @@ export class OrderService {
     const items: CreateOrderItemData[] = cartItems.map((item) => ({
       productVariantId: item.productVariant.id,
       productName: item.productVariant.product.name,
-      price: item.productVariant.price,
+      price: Math.round(
+        item.productVariant.price *
+          ((100 - item.productVariant.discountPercent) / 100),
+      ),
       size: item.productVariant.size,
       quantity: item.quantity,
       image: item.productVariant.product.images[0]?.url ?? null,

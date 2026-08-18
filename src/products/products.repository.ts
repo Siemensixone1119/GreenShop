@@ -1,26 +1,71 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './../prisma/prisma.service.js';
-import type { ProductImage } from '../../generated/prisma/client.js';
+import type { Prisma, ProductImage } from '../../generated/prisma/client.js';
 import { CreateProductDto } from './dto/create-product.dto.js';
 import { UpdateProductDto } from './dto/update-product.dto.js';
 import type { ProductWithDetails } from './types/product-with-detail.type.js';
 import { CreateProductImageDto } from './dto/create-product-image.dto.js';
 import { UpdateProductImageDto } from './dto/update-product-image.dto.js';
+import type { ProductFilterDto } from './dto/filter-product.dto.js';
+import { ProductCollection } from './enums/product-collection.enum.js';
 
 @Injectable()
 export class ProductsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  findAll(query?: string): Promise<ProductWithDetails[]> {
+  findAll(filters: ProductFilterDto): Promise<ProductWithDetails[]> {
+    const variantWhere: Prisma.ProductVariantWhereInput = {};
+    const productWhere: Prisma.ProductWhereInput = {};
+
+    if (filters.search) {
+      productWhere.name = {
+        contains: filters.search,
+        mode: 'insensitive',
+      };
+    }
+
+    if (filters.categoryId !== undefined) {
+      productWhere.categoryId = filters.categoryId;
+    }
+
+    if (filters.size) {
+      variantWhere.size = filters.size;
+    }
+
+    if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+      variantWhere.price = {
+        gte: filters.minPrice,
+        lte: filters.maxPrice,
+      };
+    }
+
+    if (filters.collection === ProductCollection.SALE) {
+      variantWhere.discountPercent = {
+        gt: 0,
+      };
+    }
+
+    const hasVariantFilters =
+      filters.size !== undefined ||
+      filters.minPrice !== undefined ||
+      filters.maxPrice !== undefined ||
+      filters.collection === ProductCollection.SALE;
+
+    if (hasVariantFilters) {
+      productWhere.variants = {
+        some: variantWhere,
+      };
+    }
+
+    if (filters.collection === ProductCollection.NEW) {
+      const newProductSince = Date.now() - 1000 * 60 * 60 * 24 * 30;
+      productWhere.createdAt = {
+        gte: new Date(newProductSince),
+      };
+    }
+
     return this.prisma.product.findMany({
-      where: query
-        ? {
-            name: {
-              contains: query,
-              mode: 'insensitive',
-            },
-          }
-        : undefined,
+      where: productWhere,
       include: {
         category: true,
         images: {

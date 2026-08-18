@@ -11,14 +11,24 @@ import type { ProductImage } from '../../generated/prisma/client.js';
 import type { ProductWithDetails } from './types/product-with-detail.type.js';
 import { CreateProductImageDto } from './dto/create-product-image.dto.js';
 import { UpdateProductImageDto } from './dto/update-product-image.dto.js';
+import { ProductFilterDto } from './dto/filter-product.dto.js';
 
 @Injectable()
 export class ProductsService {
   constructor(private readonly productsRepository: ProductsRepository) {}
 
-  findAll(search?: string): Promise<ProductWithDetails[]> {
-    const query = search?.trim();
-    return this.productsRepository.findAll(query);
+  findAll(filters: ProductFilterDto): Promise<ProductWithDetails[]> {
+    if (
+      filters.minPrice !== undefined &&
+      filters.maxPrice !== undefined &&
+      filters.minPrice > filters.maxPrice
+    ) {
+      throw new BadRequestException(
+        'Минимальная цена не может быть больше максимальной',
+      );
+    }
+
+    return this.productsRepository.findAll(filters);
   }
 
   async findOne(productId: number): Promise<ProductWithDetails> {

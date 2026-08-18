@@ -24,6 +24,7 @@ async function createProductWithVariants(data: {
   skuBase: string;
   basePrice: number;
   baseStock: number;
+  discountPercent?: number;
 }) {
   return prisma.product.create({
     data: {
@@ -37,18 +38,21 @@ async function createProductWithVariants(data: {
             price: data.basePrice,
             stock: data.baseStock,
             sku: `${data.skuBase}01`,
+            discountPercent: data.discountPercent,
           },
           {
             size: Size.MEDIUM,
             price: data.basePrice + 500,
             stock: Math.max(data.baseStock - 4, 1),
             sku: `${data.skuBase}02`,
+            discountPercent: data.discountPercent,
           },
           {
             size: Size.LARGE,
             price: data.basePrice + 1000,
             stock: Math.max(data.baseStock - 8, 1),
             sku: `${data.skuBase}03`,
+            discountPercent: data.discountPercent,
           },
         ],
       },
@@ -173,6 +177,7 @@ async function main() {
     skuBase: '10000000005',
     basePrice: 590,
     baseStock: 32,
+    discountPercent: 10,
   });
 
   const crassula = await createProductWithVariants({
@@ -210,6 +215,7 @@ async function main() {
     skuBase: '10000000009',
     basePrice: 2290,
     baseStock: 14,
+    discountPercent: 15,
   });
 
   const spathiphyllum = await createProductWithVariants({
@@ -246,6 +252,7 @@ async function main() {
     skuBase: '10000000013',
     basePrice: 1990,
     baseStock: 13,
+    discountPercent: 20,
   });
 
   const nephrolepis = await createProductWithVariants({
