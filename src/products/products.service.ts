@@ -12,12 +12,13 @@ import type { ProductWithDetails } from './types/product-with-detail.type.js';
 import { CreateProductImageDto } from './dto/create-product-image.dto.js';
 import { UpdateProductImageDto } from './dto/update-product-image.dto.js';
 import { ProductFilterDto } from './dto/filter-product.dto.js';
+import { PaginatedProducts } from './types/paginated-products.type.js';
 
 @Injectable()
 export class ProductsService {
   constructor(private readonly productsRepository: ProductsRepository) {}
 
-  findAll(filters: ProductFilterDto): Promise<ProductWithDetails[]> {
+  findAll(filters: ProductFilterDto): Promise<PaginatedProducts> {
     if (
       filters.minPrice !== undefined &&
       filters.maxPrice !== undefined &&

@@ -21,13 +21,14 @@ import { CreateProductImageDto } from './dto/create-product-image.dto.js';
 import type { ProductImage } from '../../generated/prisma/client.js';
 import { UpdateProductImageDto } from './dto/update-product-image.dto.js';
 import { ProductFilterDto } from './dto/filter-product.dto.js';
+import { PaginatedProducts } from './types/paginated-products.type.js';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  findAll(@Query() filters: ProductFilterDto): Promise<ProductWithDetails[]> {
+  findAll(@Query() filters: ProductFilterDto): Promise<PaginatedProducts> {
     return this.productsService.findAll(filters);
   }
 

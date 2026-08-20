@@ -8,14 +8,19 @@ import { CreateProductImageDto } from './dto/create-product-image.dto.js';
 import { UpdateProductImageDto } from './dto/update-product-image.dto.js';
 import type { ProductFilterDto } from './dto/filter-product.dto.js';
 import { ProductCollection } from './enums/product-collection.enum.js';
+import { PaginatedProducts } from './types/paginated-products.type.js';
 
 @Injectable()
 export class ProductsRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
-  findAll(filters: ProductFilterDto): Promise<ProductWithDetails[]> {
+  async findAll(filters: ProductFilterDto): Promise<PaginatedProducts> {
     const variantWhere: Prisma.ProductVariantWhereInput = {};
     const productWhere: Prisma.ProductWhereInput = {};
+
+    const page = filters.page;
+    const limit = filters.limit;
+    const offset = (page - 1) * limit;
 
     if (filters.search) {
       productWhere.name = {
@@ -64,7 +69,7 @@ export class ProductsRepository {
       };
     }
 
-    return this.prisma.product.findMany({
+    const items = await this.prisma.product.findMany({
       where: productWhere,
       include: {
         category: true,
@@ -75,7 +80,26 @@ export class ProductsRepository {
         },
         variants: true,
       },
+      skip: offset,
+      take: limit,
+      orderBy: {
+        id: 'asc',
+      },
     });
+
+    const total = await this.prisma.product.count({
+      where: productWhere
+    })
+
+    const totalPages = Math.ceil(total / limit)
+
+    return {
+      items,
+      total,
+      page,
+      limit,
+      totalPages
+    }
   }
 
   findOne(productId: number): Promise<ProductWithDetails | null> {

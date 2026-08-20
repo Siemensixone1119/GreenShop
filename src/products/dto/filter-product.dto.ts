@@ -4,8 +4,10 @@ import { Type } from 'class-transformer';
 import {
   IsEnum,
   IsInt,
+  IsNotEmpty,
   IsOptional,
   IsString,
+  Max,
   MaxLength,
   Min,
 } from 'class-validator';
@@ -43,4 +45,17 @@ export class ProductFilterDto {
   @IsOptional()
   @IsEnum(Size)
   size?: Size;
+
+  @Type(() => Number)
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  page!: number;
+
+  @Type(() => Number)
+  @IsNotEmpty()
+  @IsInt()
+  @Min(1)
+  @Max(45)
+  limit!: number;
 }
