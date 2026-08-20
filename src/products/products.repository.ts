@@ -9,10 +9,11 @@ import { UpdateProductImageDto } from './dto/update-product-image.dto.js';
 import type { ProductFilterDto } from './dto/filter-product.dto.js';
 import { ProductCollection } from './enums/product-collection.enum.js';
 import { PaginatedProducts } from './types/paginated-products.type.js';
+import { ProductSort } from './enums/product-sort.enum.js';
 
 @Injectable()
 export class ProductsRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async findAll(filters: ProductFilterDto): Promise<PaginatedProducts> {
     const variantWhere: Prisma.ProductVariantWhereInput = {};
@@ -64,44 +65,144 @@ export class ProductsRepository {
 
     if (filters.collection === ProductCollection.NEW) {
       const newProductSince = Date.now() - 1000 * 60 * 60 * 24 * 30;
+
       productWhere.createdAt = {
         gte: new Date(newProductSince),
       };
     }
 
-    const items = await this.prisma.product.findMany({
-      where: productWhere,
-      include: {
-        category: true,
-        images: {
-          orderBy: {
-            position: 'asc',
+    let items: ProductWithDetails[];
+
+    const isPriceSort =
+      filters.sort === ProductSort.PRICE_ASC ||
+      filters.sort === ProductSort.PRICE_DESC;
+
+    if (isPriceSort) {
+      const sortBy = filters.sort === ProductSort.PRICE_ASC ? 'asc' : 'desc';
+
+      const sortedPrices = await this.prisma.productVariant.groupBy({
+        by: ['productId'],
+
+        where: {
+          ...variantWhere,
+
+          product: productWhere,
+        },
+
+        _min: {
+          price: true,
+        },
+
+        orderBy: [
+          {
+            _min: {
+              price: sortBy,
+            },
+          },
+          {
+            productId: 'asc',
+          },
+        ],
+
+        skip: offset,
+        take: limit,
+      });
+
+      const productIds = sortedPrices.map((item) => item.productId);
+
+      const products = await this.prisma.product.findMany({
+        where: {
+          ...productWhere,
+
+          id: {
+            in: productIds,
           },
         },
-        variants: true,
-      },
-      skip: offset,
-      take: limit,
-      orderBy: {
-        id: 'asc',
-      },
-    });
+
+        include: {
+          category: true,
+
+          images: {
+            orderBy: {
+              position: 'asc',
+            },
+          },
+
+          variants: true,
+        },
+      });
+
+      const productMap = new Map(
+        products.map((product) => [product.id, product]),
+      );
+
+      items = productIds
+        .map((id) => productMap.get(id))
+        .filter(
+          (product): product is ProductWithDetails => product !== undefined,
+        );
+    } else {
+      let sort: Prisma.ProductOrderByWithRelationInput[];
+
+      switch (filters.sort) {
+        case ProductSort.CREATE_ASC:
+          sort = [{ createdAt: 'asc' }, { id: 'asc' }];
+          break;
+
+        case ProductSort.CREATE_DESC:
+          sort = [{ createdAt: 'desc' }, { id: 'asc' }];
+          break;
+
+        case ProductSort.NAME_ASC:
+          sort = [{ name: 'asc' }, { id: 'asc' }];
+          break;
+
+        case ProductSort.NAME_DESC:
+          sort = [{ name: 'desc' }, { id: 'asc' }];
+          break;
+
+        default:
+          sort = [{ id: 'asc' }];
+          break;
+      }
+
+      items = await this.prisma.product.findMany({
+        where: productWhere,
+
+        include: {
+          category: true,
+
+          images: {
+            orderBy: {
+              position: 'asc',
+            },
+          },
+
+          variants: true,
+        },
+
+        skip: offset,
+        take: limit,
+
+        orderBy: sort,
+      });
+    }
 
     const total = await this.prisma.product.count({
-      where: productWhere
-    })
+      where: productWhere,
+    });
 
-    const totalPages = Math.ceil(total / limit)
+    const totalPages = Math.ceil(total / limit);
 
     return {
       items,
       total,
       page,
       limit,
-      totalPages
-    }
+      totalPages,
+    };
   }
-
+  
   findOne(productId: number): Promise<ProductWithDetails | null> {
     return this.prisma.product.findUnique({
       where: {

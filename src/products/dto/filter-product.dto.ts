@@ -12,6 +12,7 @@ import {
   Min,
 } from 'class-validator';
 import { Trim } from '../../common/decorators/trim.decorator.js';
+import { ProductSort } from '../enums/product-sort.enum.js';
 
 export class ProductFilterDto {
   @Trim()
@@ -58,4 +59,8 @@ export class ProductFilterDto {
   @Min(1)
   @Max(45)
   limit!: number;
+
+  @IsOptional()
+  @IsEnum(ProductSort)
+  sort?: ProductSort;
 }
