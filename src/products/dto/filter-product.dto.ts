@@ -4,7 +4,6 @@ import { Type } from 'class-transformer';
 import {
   IsEnum,
   IsInt,
-  IsNotEmpty,
   IsOptional,
   IsString,
   Max,
@@ -51,14 +50,14 @@ export class ProductFilterDto {
   @IsOptional()
   @IsInt()
   @Min(1)
-  page!: number;
+  page?: number;
 
   @Type(() => Number)
-  @IsNotEmpty()
+  @IsOptional()
   @IsInt()
   @Min(1)
   @Max(45)
-  limit!: number;
+  limit?: number;
 
   @IsOptional()
   @IsEnum(ProductSort)

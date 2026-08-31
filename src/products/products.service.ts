@@ -34,7 +34,7 @@ export class ProductsService {
 
   async findOne(productId: number): Promise<ProductWithDetails> {
     if (productId <= 0) {
-      throw new BadRequestException('некорректный id товара');
+      throw new BadRequestException('Некорректный id товара');
     }
 
     const product = await this.productsRepository.findOne(productId);

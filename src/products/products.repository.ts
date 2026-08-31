@@ -19,8 +19,8 @@ export class ProductsRepository {
     const variantWhere: Prisma.ProductVariantWhereInput = {};
     const productWhere: Prisma.ProductWhereInput = {};
 
-    const page = filters.page;
-    const limit = filters.limit;
+    const page = filters.page ?? 1;
+    const limit = filters.limit ?? 9;
     const offset = (page - 1) * limit;
 
     if (filters.search) {
@@ -202,7 +202,7 @@ export class ProductsRepository {
       totalPages,
     };
   }
-  
+
   findOne(productId: number): Promise<ProductWithDetails | null> {
     return this.prisma.product.findUnique({
       where: {
