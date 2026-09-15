@@ -24,16 +24,6 @@ export class UpdateProductDto {
 
   @IsOptional()
   @IsInt()
-  @Min(0)
-  price?: number;
-
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  stock?: number;
-
-  @IsOptional()
-  @IsInt()
   @Min(1)
   categoryId?: number;
 }

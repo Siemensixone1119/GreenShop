@@ -57,7 +57,7 @@ export class ProductVariantService {
       throw new BadRequestException('Некорректный id товара');
     }
 
-    await this.ensureProductExists(productId);
+    await this.findProduct(productId);
 
     return this.productVariantRepository.findAllByProductId(productId);
   }
@@ -70,7 +70,7 @@ export class ProductVariantService {
       throw new BadRequestException('Некорректный id товара');
     }
 
-    await this.ensureProductExists(productId);
+    await this.findProduct(productId);
 
     const size = data.size;
     if (size) {
@@ -146,9 +146,9 @@ export class ProductVariantService {
     return this.productVariantRepository.delete(productId, variantId);
   }
 
-  private async ensureProductExists(productId: number): Promise<void> {
+  private async findProduct(productId: number): Promise<void> {
     const productExists =
-      await this.productVariantRepository.productExists(productId);
+      await this.productVariantRepository.findProduct(productId);
 
     if (!productExists) {
       throw new NotFoundException('Товар не найден');

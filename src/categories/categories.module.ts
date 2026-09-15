@@ -8,5 +8,6 @@ import { PrismaModule } from '../prisma/prisma.module.js';
   providers: [CategoriesService, CategoriesRepository],
   controllers: [CategoriesController],
   imports: [PrismaModule],
+  exports: [CategoriesService],
 })
 export class CategoriesModule {}

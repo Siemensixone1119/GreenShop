@@ -9,7 +9,7 @@ import type { Size } from '../../generated/prisma/enums.js';
 export class ProductVariantsRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async productExists(productId: number): Promise<boolean> {
+  async findProduct(productId: number): Promise<boolean> {
     const product = await this.prismaService.product.findUnique({
       where: {
         id: productId,

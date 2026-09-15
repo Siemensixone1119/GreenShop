@@ -13,10 +13,14 @@ import { CreateProductImageDto } from './dto/create-product-image.dto.js';
 import { UpdateProductImageDto } from './dto/update-product-image.dto.js';
 import { ProductFilterDto } from './dto/filter-product.dto.js';
 import { PaginatedProducts } from './types/paginated-products.type.js';
+import { CategoriesService } from '../categories/categories.service.js';
 
 @Injectable()
 export class ProductsService {
-  constructor(private readonly productsRepository: ProductsRepository) {}
+  constructor(
+    private readonly productsRepository: ProductsRepository,
+    private readonly categoriesService: CategoriesService,
+  ) {}
 
   findAll(filters: ProductFilterDto): Promise<PaginatedProducts> {
     if (
@@ -46,7 +50,36 @@ export class ProductsService {
     return product;
   }
 
-  create(data: CreateProductDto): Promise<ProductWithDetails> {
+  async create(data: CreateProductDto): Promise<ProductWithDetails> {
+    await this.categoriesService.findOne(data.categoryId);
+
+    const sizes = data.variants.map((variant) => variant.size);
+    const uniqueSizes = new Set(sizes);
+
+    if (sizes.length !== uniqueSizes.size) {
+      throw new ConflictException(
+        'Товары с одинаковыми размерами не могут быть созданы',
+      );
+    }
+
+    const sku = data.variants.map((variant) => variant.sku);
+    const uniqueSku = new Set(sku);
+
+    if (sku.length !== uniqueSku.size) {
+      throw new ConflictException(
+        'Товары с одинаковыми артикулами не могут быть созданы',
+      );
+    }
+
+    const imgPosition = data.images?.map((img) => img.position) ?? [];
+    const uniqueImgPosition = new Set(imgPosition);
+
+    if (imgPosition.length !== uniqueImgPosition.size) {
+      throw new ConflictException(
+        'Товары с одинаковым позициями фотографий не могут быть созданы',
+      );
+    }
+
     return this.productsRepository.create(data);
   }
 
@@ -55,7 +88,11 @@ export class ProductsService {
     data: UpdateProductDto,
   ): Promise<ProductWithDetails> {
     if (productId <= 0) {
-      throw new BadRequestException('id товара не передан');
+      throw new BadRequestException('Некорректный id товара');
+    }
+
+    if (data.categoryId) {
+      await this.categoriesService.findOne(data.categoryId);
     }
 
     await this.findOne(productId);
@@ -64,7 +101,7 @@ export class ProductsService {
 
   async delete(productId: number): Promise<ProductWithDetails> {
     if (productId <= 0) {
-      throw new BadRequestException('id товара не передан');
+      throw new BadRequestException('Некорректный id товара');
     }
 
     await this.findOne(productId);
@@ -97,6 +134,15 @@ export class ProductsService {
     if (!image) {
       throw new NotFoundException('Картинка не найдена');
     }
+
+    const product = await this.findOne(productId);
+    product.images.forEach((item) => {
+      if (item.position === data.position) {
+        throw new ConflictException(
+          'Изображение с такой позицией уже существует',
+        );
+      }
+    });
 
     return this.productsRepository.updateImage(productId, imageId, data);
   }
