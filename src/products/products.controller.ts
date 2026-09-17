@@ -22,6 +22,7 @@ import type { ProductImage } from '../../generated/prisma/client.js';
 import { UpdateProductImageDto } from './dto/update-product-image.dto.js';
 import { ProductFilterDto } from './dto/filter-product.dto.js';
 import { PaginatedProducts } from './types/paginated-products.type.js';
+import { ReorderProductImagesDto } from './dto/reorder-product-image.dto.js';
 
 @Controller('products')
 export class ProductsController {
@@ -73,6 +74,16 @@ export class ProductsController {
     @Body() body: CreateProductImageDto,
   ): Promise<ProductImage> {
     return this.productsService.addImage(productId, body);
+  }
+
+  @Roles(['ADMIN'])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Patch(':productId/images/reorder')
+  reorderImage(
+    @Param('productId', ParseIntPipe) productId: number,
+    @Body() body: ReorderProductImagesDto,
+  ): Promise<ProductImage[]> {
+    return this.productsService.reorderImage(productId, body);
   }
 
   @Roles(['ADMIN'])

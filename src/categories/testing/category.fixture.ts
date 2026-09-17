@@ -2,7 +2,7 @@ import { Category } from '../../../generated/prisma/client.js';
 
 const testDate = new Date('2026-01-01T00:00:00.000Z');
 
-export function createCategoryFixtures(
+export function createCategoryFixture(
   overrides: Partial<Category> = {},
 ): Category {
   return {

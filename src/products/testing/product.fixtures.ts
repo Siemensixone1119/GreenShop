@@ -3,12 +3,12 @@ import {
   ProductVariant,
   Size,
 } from '../../../generated/prisma/client.js';
-import { createCategoryFixtures } from '../../categories/testing/category.fixture.js';
+import { createCategoryFixture } from '../../categories/testing/category.fixture.js';
 import { ProductWithDetails } from '../types/product-with-detail.type.js';
 
 const testDate = new Date('2026-01-01T00:00:00.000Z');
 
-export function createProductImageFixtures(
+export function createProductImageFixture(
   overrides: Partial<ProductImage> = {},
 ): ProductImage {
   return {
@@ -21,7 +21,7 @@ export function createProductImageFixtures(
   };
 }
 
-export function createProductVariantFixtures(
+export function createProductVariantFixture(
   overrides: Partial<ProductVariant> = {},
 ): ProductVariant {
   return {
@@ -38,7 +38,7 @@ export function createProductVariantFixtures(
   };
 }
 
-export function createProductFixtures(
+export function createProductFixture(
   overrides: Partial<ProductWithDetails> = {},
 ): ProductWithDetails {
   return {
@@ -49,9 +49,9 @@ export function createProductFixtures(
     createdAt: testDate,
     updatedAt: testDate,
 
-    category: createCategoryFixtures(),
-    variants: [createProductVariantFixtures()],
-    images: [createProductImageFixtures()],
+    category: createCategoryFixture(),
+    variants: [createProductVariantFixture()],
+    images: [createProductImageFixture()],
     ...overrides,
   };
 }

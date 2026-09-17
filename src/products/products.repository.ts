@@ -319,4 +319,41 @@ export class ProductsRepository {
       },
     });
   }
+
+  reorderImage(productId: number, imageIds: number[]): Promise<ProductImage[]> {
+    return this.prisma.$transaction(async (tx) => {
+      const images = await tx.productImage.findMany({ where: { productId } });
+      const maxPos = Math.max(...images.map((image) => image.position));
+      for (const [index, imageId] of imageIds.entries()) {
+        await tx.productImage.update({
+          where: {
+            id: imageId,
+            productId,
+          },
+          data: {
+            position: maxPos + index + 1,
+          },
+        });
+      }
+
+      for (const [index, imageId] of imageIds.entries()) {
+        await tx.productImage.update({
+          where: {
+            id: imageId,
+            productId,
+          },
+          data: {
+            position: index + 1,
+          },
+        });
+      }
+
+      return tx.productImage.findMany({
+        where: {
+          productId,
+        },
+        orderBy: { position: 'asc' },
+      });
+    });
+  }
 }

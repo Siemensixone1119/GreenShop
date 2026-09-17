@@ -7,7 +7,7 @@ export class CreateProductImageDto {
 
   @IsString()
   @IsOptional()
-  alt?: string;
+  alt!: string;
 
   @IsInt()
   @Min(0)

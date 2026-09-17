@@ -14,6 +14,7 @@ import { UpdateProductImageDto } from './dto/update-product-image.dto.js';
 import { ProductFilterDto } from './dto/filter-product.dto.js';
 import { PaginatedProducts } from './types/paginated-products.type.js';
 import { CategoriesService } from '../categories/categories.service.js';
+import { ReorderProductImagesDto } from './dto/reorder-product-image.dto.js';
 
 @Injectable()
 export class ProductsService {
@@ -128,16 +129,15 @@ export class ProductsService {
     imageId: number,
     data: UpdateProductImageDto,
   ): Promise<ProductImage> {
-    await this.findOne(productId);
+    const product = await this.findOne(productId);
     const image = await this.productsRepository.findImage(productId, imageId);
 
     if (!image) {
       throw new NotFoundException('Картинка не найдена');
     }
 
-    const product = await this.findOne(productId);
     product.images.forEach((item) => {
-      if (item.position === data.position) {
+      if (item.position === data.position && item.id !== imageId) {
         throw new ConflictException(
           'Изображение с такой позицией уже существует',
         );
@@ -155,5 +155,30 @@ export class ProductsService {
       throw new NotFoundException('Картинка не найдена');
     }
     return this.productsRepository.deleteImage(productId, imageId);
+  }
+
+  async reorderImage(
+    productId: number,
+    data: ReorderProductImagesDto,
+  ): Promise<ProductImage[]> {
+    const product = await this.findOne(productId);
+
+    const imageIdsUnique = new Set(data.imageIds);
+
+    if (imageIdsUnique.size !== data.imageIds.length) {
+      throw new BadRequestException('id картинок не могут повторяться');
+    }
+
+    if (product.images.length !== data.imageIds.length) {
+      throw new BadRequestException('Нужно передать все изображения товара');
+    }
+
+    data.imageIds.forEach((id) => {
+      if (!product.images.some((image) => image.id === id)) {
+        throw new BadRequestException('Изображение не принадлежит товару');
+      }
+    });
+
+    return this.productsRepository.reorderImage(productId, data.imageIds);
   }
 }
