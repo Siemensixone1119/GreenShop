@@ -9,15 +9,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import type { ProductWithDetails } from './types/product-with-detail.type.js';
-import { CreateProductDto } from './dto/create-product.dto.js';
-import { UpdateProductDto } from './dto/update-product.dto.js';
+import type { CreateProductDto } from './dto/create-product.dto.js';
+import type { UpdateProductDto } from './dto/update-product.dto.js';
 import { CategoriesService } from '../categories/categories.service.js';
 import {
   createProductFixture,
   createProductImageFixture,
 } from './testing/product.fixtures.js';
 import { createCategoryFixture } from '../categories/testing/category.fixture.js';
-import { ProductImage, Size } from '../../generated/prisma/client.js';
+import type { ProductImage } from '../../generated/prisma/client.js';
+import { Size } from '../../generated/prisma/client.js';
 
 describe('ProductsService', () => {
   let service: ProductsService;
@@ -117,7 +118,7 @@ describe('ProductsService', () => {
   });
 
   describe('findOne', () => {
-    it('выбрасывает ошибку, если id товара <= 0', async () => {
+    it('выбрасывает ошибку, если ID товара некорректен', async () => {
       const productId = 0;
 
       const result = service.findOne(productId);
@@ -318,7 +319,7 @@ describe('ProductsService', () => {
   });
 
   describe('update', () => {
-    it('выбрасывает ошибку, если id товара <= 0', async () => {
+    it('выбрасывает ошибку, если ID товара некорректен', async () => {
       const productId = 0;
       const data: UpdateProductDto = {
         name: 'Монстера',
@@ -410,7 +411,7 @@ describe('ProductsService', () => {
     });
   });
 
-  describe('update без изменения категории', () => {
+  describe('update без categoryId', () => {
     it('возвращает обновлённый товар без поиска категории', async () => {
       const productId = 1;
       const data = { name: 'Фикус' } satisfies UpdateProductDto;
@@ -432,7 +433,7 @@ describe('ProductsService', () => {
   });
 
   describe('delete', () => {
-    it('выбрасывает ошибку, если id товара <= 0', async () => {
+    it('выбрасывает ошибку, если ID товара некорректен', async () => {
       const productId = 0;
       const result = service.delete(productId);
 
@@ -621,18 +622,18 @@ describe('ProductsService', () => {
 
       const expectedFindResult = createProductFixture();
       const expectedFindImageResult = createProductImageFixture();
-      const expetedUpdatedResult = createProductImageFixture({
+      const expectedUpdatedResult = createProductImageFixture({
         alt: 'photo2',
         position: 2,
       });
 
       findOne.mockResolvedValue(expectedFindResult);
       findImage.mockResolvedValue(expectedFindImageResult);
-      updateImage.mockResolvedValue(expetedUpdatedResult);
+      updateImage.mockResolvedValue(expectedUpdatedResult);
 
       const result = service.updateImage(productId, imageId, data);
 
-      await expect(result).resolves.toEqual(expetedUpdatedResult);
+      await expect(result).resolves.toEqual(expectedUpdatedResult);
       expect(findOne).toHaveBeenCalledWith(productId);
       expect(findOne).toHaveBeenCalledTimes(1);
       expect(findImage).toHaveBeenCalledWith(productId, imageId);
@@ -642,7 +643,7 @@ describe('ProductsService', () => {
     });
   });
 
-  describe('updateImage без изменения позиции', () => {
+  describe('updateImage без изменения position', () => {
     it('возвращает обновлённое изображение при сохранении собственной позиции', async () => {
       const productId = 1;
       const imageId = 1;
