@@ -1,0 +1,18 @@
+services:
+  db-test:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: greenshop_test
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U postgres -d greenshop_test"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
