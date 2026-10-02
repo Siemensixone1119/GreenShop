@@ -26,8 +26,8 @@ export function createOrderDtoFixture(
 export function createOrderFixture(overrides: Partial<Order> = {}): Order {
   const delivery = createOrderDtoFixture();
   return {
-    id: 1,
-    userId: 1,
+    id: '00000000-0000-4000-8000-000000000001',
+    userId: '00000000-0000-4000-8000-000000000002',
     status: OrderStatus.NEW,
     totalPrice: 2000,
     createdAt: testDate,
@@ -50,9 +50,9 @@ export function createOrderItemFixture(
   overrides: Partial<OrderItem> = {},
 ): OrderItem {
   return {
-    id: 1,
-    orderId: 1,
-    productVariantId: 1,
+    id: '00000000-0000-4000-8000-000000000001',
+    orderId: '00000000-0000-4000-8000-000000000007',
+    productVariantId: '00000000-0000-4000-8000-000000000006',
     productName: 'Монстера',
     price: 1000,
     size: Size.MEDIUM,

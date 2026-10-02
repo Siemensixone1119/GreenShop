@@ -6,7 +6,7 @@ import type { CartItem } from '../../generated/prisma/client.js';
 export class CartItemRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  findItem(cartId: number, productVariantId: number): Promise<CartItem | null> {
+  findItem(cartId: string, productVariantId: string): Promise<CartItem | null> {
     return this.prisma.cartItem.findUnique({
       where: {
         cartId_productVariantId: {
@@ -18,8 +18,8 @@ export class CartItemRepository {
   }
 
   create(
-    cartId: number,
-    productVariantId: number,
+    cartId: string,
+    productVariantId: string,
     quantity: number,
   ): Promise<CartItem> {
     return this.prisma.cartItem.create({
@@ -31,7 +31,7 @@ export class CartItemRepository {
     });
   }
 
-  delete(cartItemId: number): Promise<CartItem> {
+  delete(cartItemId: string): Promise<CartItem> {
     return this.prisma.cartItem.delete({
       where: {
         id: cartItemId,
@@ -39,7 +39,7 @@ export class CartItemRepository {
     });
   }
 
-  updateQuantity(cartItemId: number, quantity: number): Promise<CartItem> {
+  updateQuantity(cartItemId: string, quantity: number): Promise<CartItem> {
     return this.prisma.cartItem.update({
       where: {
         id: cartItemId,

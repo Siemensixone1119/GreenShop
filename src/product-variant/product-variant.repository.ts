@@ -9,7 +9,7 @@ import type { Size } from '../../generated/prisma/enums.js';
 export class ProductVariantsRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findProduct(productId: number): Promise<boolean> {
+  async findProduct(productId: string): Promise<boolean> {
     const product = await this.prismaService.product.findUnique({
       where: {
         id: productId,
@@ -22,7 +22,7 @@ export class ProductVariantsRepository {
     return product !== null;
   }
 
-  findOneById(variantId: number): Promise<ProductVariant | null> {
+  findOneById(variantId: string): Promise<ProductVariant | null> {
     return this.prismaService.productVariant.findUnique({
       where: {
         id: variantId,
@@ -31,8 +31,8 @@ export class ProductVariantsRepository {
   }
 
   findOneByProductId(
-    productId: number,
-    variantId: number,
+    productId: string,
+    variantId: string,
   ): Promise<ProductVariant | null> {
     return this.prismaService.productVariant.findUnique({
       where: {
@@ -42,7 +42,7 @@ export class ProductVariantsRepository {
     });
   }
 
-  findAllByProductId(productId: number): Promise<ProductVariant[]> {
+  findAllByProductId(productId: string): Promise<ProductVariant[]> {
     return this.prismaService.productVariant.findMany({
       where: {
         productId,
@@ -51,7 +51,7 @@ export class ProductVariantsRepository {
   }
 
   create(
-    productId: number,
+    productId: string,
     data: CreateProductVariantDto,
   ): Promise<ProductVariant> {
     return this.prismaService.productVariant.create({
@@ -63,8 +63,8 @@ export class ProductVariantsRepository {
   }
 
   update(
-    productId: number,
-    variantId: number,
+    productId: string,
+    variantId: string,
     data: UpdateProductVariantDto,
   ): Promise<ProductVariant> {
     return this.prismaService.productVariant.update({
@@ -73,7 +73,7 @@ export class ProductVariantsRepository {
     });
   }
 
-  delete(productId: number, variantId: number): Promise<ProductVariant> {
+  delete(productId: string, variantId: string): Promise<ProductVariant> {
     return this.prismaService.productVariant.delete({
       where: {
         id: variantId,
@@ -88,7 +88,7 @@ export class ProductVariantsRepository {
     });
   }
 
-  findBySize(productId: number, size: Size): Promise<ProductVariant | null> {
+  findBySize(productId: string, size: Size): Promise<ProductVariant | null> {
     return this.prismaService.productVariant.findUnique({
       where: {
         productId_size: {
@@ -99,7 +99,7 @@ export class ProductVariantsRepository {
     });
   }
 
-  countVariants(productId: number): Promise<number> {
+  countVariants(productId: string): Promise<number> {
     return this.prismaService.productVariant.count({
       where: {
         productId,

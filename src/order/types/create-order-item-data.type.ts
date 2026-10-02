@@ -1,7 +1,7 @@
 import type { Size } from '../../../generated/prisma/enums.js';
 
 export type CreateOrderItemData = {
-  productVariantId: number;
+  productVariantId: string;
   productName: string;
   size: Size;
   price: number;

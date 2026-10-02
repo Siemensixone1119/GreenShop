@@ -35,23 +35,35 @@ describe('SessionsService', () => {
 
   it.each([
     [
-      { userId: 0, refreshHash: 'hash', expiresAt: new Date('2099-01-01') },
+      {
+        userId: '',
+        refreshHash: 'hash',
+        expiresAt: new Date('2099-01-01'),
+      },
       'id пользователя не передан',
     ],
     [
-      { userId: 1, refreshHash: ' ', expiresAt: new Date('2099-01-01') },
+      {
+        userId: '00000000-0000-4000-8000-000000000001',
+        refreshHash: ' ',
+        expiresAt: new Date('2099-01-01'),
+      },
       'refreshHash не передан',
     ],
     [
       {
-        userId: 1,
+        userId: '00000000-0000-4000-8000-000000000001',
         refreshHash: 'hash',
         expiresAt: undefined as unknown as Date,
       },
       'expires_at пользователя не передан',
     ],
     [
-      { userId: 1, refreshHash: 'hash', expiresAt: new Date('2020-01-01') },
+      {
+        userId: '00000000-0000-4000-8000-000000000001',
+        refreshHash: 'hash',
+        expiresAt: new Date('2020-01-01'),
+      },
       'Некорректный expires_at',
     ],
   ])('проверяет данные новой сессии', (data, message) => {
@@ -62,7 +74,7 @@ describe('SessionsService', () => {
   it('обрезает hash и создаёт сессию', async () => {
     const session = createSessionFixture();
     const data = {
-      userId: 1,
+      userId: '00000000-0000-4000-8000-000000000001',
       refreshHash: ' hash ',
       expiresAt: session.expiresAt,
     };
@@ -75,14 +87,16 @@ describe('SessionsService', () => {
   });
 
   it('выбрасывает ошибку, если ID сессии некорректен', () => {
-    expect(() => service.findById(0)).toThrow(BadRequestException);
+    expect(() => service.findById('')).toThrow(BadRequestException);
     expect(repository.findById).not.toHaveBeenCalled();
   });
 
   it('возвращает результат поиска сессии', async () => {
     const session = createSessionFixture();
     repository.findById.mockResolvedValue(session);
-    await expect(service.findById(1)).resolves.toEqual(session);
+    await expect(
+      service.findById('00000000-0000-4000-8000-000000000001'),
+    ).resolves.toEqual(session);
   });
 
   it.each([
@@ -93,26 +107,38 @@ describe('SessionsService', () => {
     'возвращает null для отсутствующей или неактивной сессии',
     async (session) => {
       repository.findById.mockResolvedValue(session);
-      await expect(service.findActiveById(1)).resolves.toBeNull();
+      await expect(
+        service.findActiveById('00000000-0000-4000-8000-000000000001'),
+      ).resolves.toBeNull();
     },
   );
 
   it('возвращает активную сессию', async () => {
     const session = createSessionFixture();
     repository.findById.mockResolvedValue(session);
-    await expect(service.findActiveById(1)).resolves.toEqual(session);
+    await expect(
+      service.findActiveById('00000000-0000-4000-8000-000000000001'),
+    ).resolves.toEqual(session);
   });
 
   it('отзывает сессию по id', async () => {
     const session = createSessionFixture({ revokedAt: new Date() });
     repository.revokeById.mockResolvedValue(session);
-    await expect(service.revokeById(1)).resolves.toEqual(session);
-    expect(repository.revokeById).toHaveBeenCalledWith(1);
+    await expect(
+      service.revokeById('00000000-0000-4000-8000-000000000001'),
+    ).resolves.toEqual(session);
+    expect(repository.revokeById).toHaveBeenCalledWith(
+      '00000000-0000-4000-8000-000000000001',
+    );
   });
 
   it('отзывает все сессии пользователя', async () => {
     repository.revokeAllByUserId.mockResolvedValue({ count: 2 });
-    await expect(service.revokeAllByUserId(1)).resolves.toEqual({ count: 2 });
-    expect(repository.revokeAllByUserId).toHaveBeenCalledWith(1);
+    await expect(
+      service.revokeAllByUserId('00000000-0000-4000-8000-000000000001'),
+    ).resolves.toEqual({ count: 2 });
+    expect(repository.revokeAllByUserId).toHaveBeenCalledWith(
+      '00000000-0000-4000-8000-000000000001',
+    );
   });
 });

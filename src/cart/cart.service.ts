@@ -19,7 +19,7 @@ export class CartService {
     private readonly productVariantService: ProductVariantService,
   ) {}
 
-  async getMyCart(userId: number): Promise<CartWithItems> {
+  async getMyCart(userId: string): Promise<CartWithItems> {
     await this.findOrCreateCart(userId);
     const cart = await this.cartRepository.findByUserIdWithItems(userId);
     if (!cart) {
@@ -28,7 +28,7 @@ export class CartService {
     return cart;
   }
 
-  async addItem(userId: number, data: AddCartItemDto): Promise<CartItem> {
+  async addItem(userId: string, data: AddCartItemDto): Promise<CartItem> {
     const productVariantId = data.productVariantId;
     const quantity = data.quantity;
 
@@ -56,11 +56,11 @@ export class CartService {
   }
 
   async updateQuantity(
-    userId: number,
-    productVariantId: number,
+    userId: string,
+    productVariantId: string,
     data: UpdateCartItemDto,
   ): Promise<CartItem> {
-    if (!productVariantId || productVariantId <= 0) {
+    if (!productVariantId) {
       throw new BadRequestException('Некорректный id варианта товара');
     }
 
@@ -76,10 +76,10 @@ export class CartService {
   }
 
   async removeItem(
-    userId: number,
-    productVariantId: number,
+    userId: string,
+    productVariantId: string,
   ): Promise<CartItem> {
-    if (!productVariantId || productVariantId <= 0) {
+    if (!productVariantId) {
       throw new BadRequestException('Некорректный id варианта товара');
     }
 
@@ -89,7 +89,7 @@ export class CartService {
     return this.cartItemRepository.delete(cartItem.id);
   }
 
-  private async findOrCreateCart(userId: number): Promise<Cart> {
+  private async findOrCreateCart(userId: string): Promise<Cart> {
     const cart = await this.cartRepository.findByUserId(userId);
     if (!cart) {
       return this.cartRepository.create(userId);
@@ -98,7 +98,7 @@ export class CartService {
     return cart;
   }
 
-  private async findCartOrThrow(userId: number): Promise<Cart> {
+  private async findCartOrThrow(userId: string): Promise<Cart> {
     const cart = await this.cartRepository.findByUserId(userId);
     if (!cart) {
       throw new NotFoundException('Корзина не найдена');
@@ -107,8 +107,8 @@ export class CartService {
   }
 
   private async findCartItemOrThrow(
-    cartId: number,
-    productVariantId: number,
+    cartId: string,
+    productVariantId: string,
   ): Promise<CartItem> {
     const cartItem = await this.cartItemRepository.findItem(
       cartId,

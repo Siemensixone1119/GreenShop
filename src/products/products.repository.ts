@@ -203,7 +203,7 @@ export class ProductsRepository {
     };
   }
 
-  findOne(productId: number): Promise<ProductWithDetails | null> {
+  findOne(productId: string): Promise<ProductWithDetails | null> {
     return this.prisma.product.findUnique({
       where: {
         id: productId,
@@ -241,7 +241,7 @@ export class ProductsRepository {
   }
 
   update(
-    productId: number,
+    productId: string,
     data: UpdateProductDto,
   ): Promise<ProductWithDetails> {
     return this.prisma.product.update({
@@ -259,7 +259,7 @@ export class ProductsRepository {
     });
   }
 
-  delete(productId: number): Promise<ProductWithDetails> {
+  delete(productId: string): Promise<ProductWithDetails> {
     return this.prisma.product.delete({
       where: {
         id: productId,
@@ -276,7 +276,7 @@ export class ProductsRepository {
     });
   }
 
-  findImage(productId: number, imageId: number): Promise<ProductImage | null> {
+  findImage(productId: string, imageId: string): Promise<ProductImage | null> {
     return this.prisma.productImage.findUnique({
       where: {
         id: imageId,
@@ -286,7 +286,7 @@ export class ProductsRepository {
   }
 
   addImage(
-    productId: number,
+    productId: string,
     imageData: CreateProductImageDto,
   ): Promise<ProductImage> {
     return this.prisma.productImage.create({
@@ -298,8 +298,8 @@ export class ProductsRepository {
   }
 
   updateImage(
-    productId: number,
-    imageId: number,
+    productId: string,
+    imageId: string,
     data: UpdateProductImageDto,
   ): Promise<ProductImage> {
     return this.prisma.productImage.update({
@@ -311,7 +311,7 @@ export class ProductsRepository {
     });
   }
 
-  deleteImage(productId: number, imageId: number): Promise<ProductImage> {
+  deleteImage(productId: string, imageId: string): Promise<ProductImage> {
     return this.prisma.productImage.delete({
       where: {
         id: imageId,
@@ -320,7 +320,7 @@ export class ProductsRepository {
     });
   }
 
-  reorderImage(productId: number, imageIds: number[]): Promise<ProductImage[]> {
+  reorderImage(productId: string, imageIds: string[]): Promise<ProductImage[]> {
     return this.prisma.$transaction(async (tx) => {
       const images = await tx.productImage.findMany({ where: { productId } });
       const maxPos = Math.max(...images.map((image) => image.position));

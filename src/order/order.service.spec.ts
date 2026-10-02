@@ -55,7 +55,10 @@ describe('OrderService', () => {
     it('не создаёт заказ из пустой корзины', async () => {
       getMyCart.mockResolvedValue(createCartWithItemsFixture({ items: [] }));
       await expect(
-        service.createOrder(1, createOrderDtoFixture()),
+        service.createOrder(
+          '00000000-0000-4000-8000-000000000001',
+          createOrderDtoFixture(),
+        ),
       ).rejects.toThrow('Корзина пуста');
       expect(repository.create).not.toHaveBeenCalled();
     });
@@ -66,7 +69,10 @@ describe('OrderService', () => {
       cart.items[0].productVariant.stock = 5;
       getMyCart.mockResolvedValue(cart);
       await expect(
-        service.createOrder(1, createOrderDtoFixture()),
+        service.createOrder(
+          '00000000-0000-4000-8000-000000000001',
+          createOrderDtoFixture(),
+        ),
       ).rejects.toThrow('Недостаточно товара');
       expect(repository.create).not.toHaveBeenCalled();
     });
@@ -81,9 +87,11 @@ describe('OrderService', () => {
       getMyCart.mockResolvedValue(cart);
       repository.create.mockResolvedValue(order);
 
-      await expect(service.createOrder(1, data)).resolves.toEqual(order);
+      await expect(
+        service.createOrder('00000000-0000-4000-8000-000000000001', data),
+      ).resolves.toEqual(order);
       expect(repository.create).toHaveBeenCalledWith(
-        1,
+        '00000000-0000-4000-8000-000000000001',
         {
           ...data,
           totalPrice: 1700,
@@ -107,9 +115,12 @@ describe('OrderService', () => {
       cart.items[0].productVariant.product.images = [];
       getMyCart.mockResolvedValue(cart);
       repository.create.mockResolvedValue(createOrderFixture());
-      await service.createOrder(1, createOrderDtoFixture());
+      await service.createOrder(
+        '00000000-0000-4000-8000-000000000001',
+        createOrderDtoFixture(),
+      );
       expect(repository.create).toHaveBeenCalledWith(
-        1,
+        '00000000-0000-4000-8000-000000000001',
         expect.objectContaining({
           items: [expect.objectContaining({ image: null })],
         }),
@@ -121,27 +132,44 @@ describe('OrderService', () => {
   it('возвращает заказы текущего пользователя', async () => {
     const orders = [createOrderWithItemsFixture()];
     repository.findByUserIdWithItems.mockResolvedValue(orders);
-    await expect(service.getMyOrders(1)).resolves.toEqual(orders);
-    expect(repository.findByUserIdWithItems).toHaveBeenCalledWith(1);
+    await expect(
+      service.getMyOrders('00000000-0000-4000-8000-000000000001'),
+    ).resolves.toEqual(orders);
+    expect(repository.findByUserIdWithItems).toHaveBeenCalledWith(
+      '00000000-0000-4000-8000-000000000001',
+    );
   });
 
   describe('getMyOrder', () => {
     it('выбрасывает ошибку, если ID заказа некорректен', async () => {
-      await expect(service.getMyOrder(1, 0)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.getMyOrder('00000000-0000-4000-8000-000000000001', ''),
+      ).rejects.toThrow(BadRequestException);
     });
 
     it('не раскрывает отсутствующий или чужой заказ', async () => {
       repository.findByIdAndUserIdWithItems.mockResolvedValue(null);
-      await expect(service.getMyOrder(1, 2)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.getMyOrder(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000002',
+        ),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('возвращает заказ пользователя', async () => {
       const order = createOrderWithItemsFixture();
       repository.findByIdAndUserIdWithItems.mockResolvedValue(order);
-      await expect(service.getMyOrder(1, 1)).resolves.toEqual(order);
-      expect(repository.findByIdAndUserIdWithItems).toHaveBeenCalledWith(1, 1);
+      await expect(
+        service.getMyOrder(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+        ),
+      ).resolves.toEqual(order);
+      expect(repository.findByIdAndUserIdWithItems).toHaveBeenCalledWith(
+        '00000000-0000-4000-8000-000000000001',
+        '00000000-0000-4000-8000-000000000001',
+      );
     });
   });
 
@@ -153,27 +181,34 @@ describe('OrderService', () => {
 
   describe('getOrderById', () => {
     it('выбрасывает ошибку, если ID заказа некорректен', async () => {
-      await expect(service.getOrderById(0)).rejects.toThrow(
+      await expect(service.getOrderById('')).rejects.toThrow(
         BadRequestException,
       );
     });
 
     it('выбрасывает ошибку, если заказ не найден', async () => {
       repository.findByIdWithItems.mockResolvedValue(null);
-      await expect(service.getOrderById(1)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.getOrderById('00000000-0000-4000-8000-000000000001'),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('возвращает заказ по id', async () => {
       const order = createOrderWithItemsFixture();
       repository.findByIdWithItems.mockResolvedValue(order);
-      await expect(service.getOrderById(1)).resolves.toEqual(order);
+      await expect(
+        service.getOrderById('00000000-0000-4000-8000-000000000001'),
+      ).resolves.toEqual(order);
     });
   });
 
   it('не обновляет статус отсутствующего заказа', async () => {
     repository.findByIdWithItems.mockResolvedValue(null);
     await expect(
-      service.updateStatus(1, OrderStatus.CONFIRMED),
+      service.updateStatus(
+        '00000000-0000-4000-8000-000000000001',
+        OrderStatus.CONFIRMED,
+      ),
     ).rejects.toThrow(NotFoundException);
     expect(repository.updateStatus).not.toHaveBeenCalled();
   });
@@ -184,10 +219,13 @@ describe('OrderService', () => {
     repository.findByIdWithItems.mockResolvedValue(details);
     repository.updateStatus.mockResolvedValue(updated);
     await expect(
-      service.updateStatus(1, OrderStatus.CONFIRMED),
+      service.updateStatus(
+        '00000000-0000-4000-8000-000000000001',
+        OrderStatus.CONFIRMED,
+      ),
     ).resolves.toEqual(updated);
     expect(repository.updateStatus).toHaveBeenCalledWith(
-      1,
+      '00000000-0000-4000-8000-000000000001',
       OrderStatus.CONFIRMED,
     );
   });

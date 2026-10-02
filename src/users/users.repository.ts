@@ -48,7 +48,7 @@ export class UsersRepository {
     });
   }
 
-  findById(userId: number): Promise<PublicUser | null> {
+  findById(userId: string): Promise<PublicUser | null> {
     return this.prisma.user.findUnique({
       where: { id: userId },
       select: this.publicUserSelect,
@@ -62,7 +62,7 @@ export class UsersRepository {
     });
   }
 
-  update(userId: number, data: UpdateUserData): Promise<PublicUser> {
+  update(userId: string, data: UpdateUserData): Promise<PublicUser> {
     return this.prisma.user.update({
       where: { id: userId },
       data,
@@ -70,7 +70,7 @@ export class UsersRepository {
     });
   }
 
-  delete(userId: number): Promise<PublicUser> {
+  delete(userId: string): Promise<PublicUser> {
     return this.prisma.user.delete({
       where: { id: userId },
       select: this.publicUserSelect,

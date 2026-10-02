@@ -12,7 +12,7 @@ export class SessionsService {
     const refreshHash = data.refreshHash?.trim() ?? null;
     const expiresAt = data.expiresAt ?? null;
 
-    if (!userId || userId <= 0) {
+    if (!userId) {
       throw new BadRequestException('id пользователя не передан');
     }
 
@@ -35,16 +35,16 @@ export class SessionsService {
     });
   }
 
-  findById(sessionId: number): Promise<Session | null> {
-    if (!sessionId || sessionId <= 0) {
+  findById(sessionId: string): Promise<Session | null> {
+    if (!sessionId) {
       throw new BadRequestException('id сессии не передан');
     }
 
     return this.sessionRepository.findById(sessionId);
   }
 
-  async findActiveById(sessionId: number): Promise<Session | null> {
-    if (!sessionId || sessionId <= 0) {
+  async findActiveById(sessionId: string): Promise<Session | null> {
+    if (!sessionId) {
       throw new BadRequestException('id сессии не передан');
     }
 
@@ -57,16 +57,16 @@ export class SessionsService {
     return session;
   }
 
-  revokeById(sessionId: number): Promise<Session> {
-    if (!sessionId || sessionId <= 0) {
+  revokeById(sessionId: string): Promise<Session> {
+    if (!sessionId) {
       throw new BadRequestException('id сессии не передан');
     }
 
     return this.sessionRepository.revokeById(sessionId);
   }
 
-  revokeAllByUserId(userId: number): Promise<Prisma.BatchPayload> {
-    if (!userId || userId <= 0) {
+  revokeAllByUserId(userId: string): Promise<Prisma.BatchPayload> {
+    if (!userId) {
       throw new BadRequestException('id пользователя не передан');
     }
 

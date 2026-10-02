@@ -15,12 +15,12 @@ export class ProductVariantService {
     private readonly productVariantRepository: ProductVariantsRepository,
   ) {}
 
-  async findOne(productId: number, variantId: number): Promise<ProductVariant> {
-    if (!productId || productId <= 0) {
+  async findOne(productId: string, variantId: string): Promise<ProductVariant> {
+    if (!productId) {
       throw new BadRequestException('Некорректный id товара');
     }
 
-    if (!variantId || variantId <= 0) {
+    if (!variantId) {
       throw new BadRequestException('Некорректный id варианта');
     }
 
@@ -37,8 +37,8 @@ export class ProductVariantService {
     return productVariant;
   }
 
-  async findOneById(variantId: number): Promise<ProductVariant> {
-    if (!variantId || variantId <= 0) {
+  async findOneById(variantId: string): Promise<ProductVariant> {
+    if (!variantId) {
       throw new BadRequestException('Некорректный id варианта');
     }
 
@@ -52,8 +52,8 @@ export class ProductVariantService {
     return productVariant;
   }
 
-  async findAll(productId: number): Promise<ProductVariant[]> {
-    if (!productId || productId <= 0) {
+  async findAll(productId: string): Promise<ProductVariant[]> {
+    if (!productId) {
       throw new BadRequestException('Некорректный id товара');
     }
 
@@ -63,10 +63,10 @@ export class ProductVariantService {
   }
 
   async create(
-    productId: number,
+    productId: string,
     data: CreateProductVariantDto,
   ): Promise<ProductVariant> {
-    if (!productId || productId <= 0) {
+    if (!productId) {
       throw new BadRequestException('Некорректный id товара');
     }
 
@@ -92,15 +92,15 @@ export class ProductVariantService {
   }
 
   async update(
-    productId: number,
-    variantId: number,
+    productId: string,
+    variantId: string,
     data: UpdateProductVariantDto,
   ): Promise<ProductVariant> {
-    if (!productId || productId <= 0) {
+    if (!productId) {
       throw new BadRequestException('Некорректный id товара');
     }
 
-    if (!variantId || variantId <= 0) {
+    if (!variantId) {
       throw new BadRequestException('Некорректный id варианта');
     }
 
@@ -126,12 +126,12 @@ export class ProductVariantService {
     return this.productVariantRepository.update(productId, variantId, data);
   }
 
-  async delete(productId: number, variantId: number): Promise<ProductVariant> {
-    if (!productId || productId <= 0) {
+  async delete(productId: string, variantId: string): Promise<ProductVariant> {
+    if (!productId) {
       throw new BadRequestException('Некорректный id товара');
     }
 
-    if (!variantId || variantId <= 0) {
+    if (!variantId) {
       throw new BadRequestException('Некорректный id варианта');
     }
 
@@ -146,7 +146,7 @@ export class ProductVariantService {
     return this.productVariantRepository.delete(productId, variantId);
   }
 
-  private async findProduct(productId: number): Promise<void> {
+  private async findProduct(productId: string): Promise<void> {
     const productExists =
       await this.productVariantRepository.findProduct(productId);
 

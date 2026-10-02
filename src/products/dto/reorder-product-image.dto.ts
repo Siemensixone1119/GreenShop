@@ -3,8 +3,7 @@ import {
   ArrayMinSize,
   ArrayUnique,
   IsArray,
-  IsInt,
-  Min,
+  IsUUID,
 } from 'class-validator';
 
 export class ReorderProductImagesDto {
@@ -12,7 +11,6 @@ export class ReorderProductImagesDto {
   @ArrayMinSize(2)
   @ArrayMaxSize(10)
   @ArrayUnique()
-  @IsInt({ each: true })
-  @Min(1, { each: true })
-  imageIds!: number[];
+  @IsUUID(undefined, { each: true })
+  imageIds!: string[];
 }

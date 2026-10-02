@@ -14,6 +14,7 @@ import { LoginUserDto } from './dto/login.dto.js';
 import type { RefreshCookie } from './types/refresh-cookie-data.type.js';
 import type { AuthResult } from './types/auth-result.type.js';
 import type { IssuedTokens } from './types/issued-tokens.type.js';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class AuthService {
@@ -85,8 +86,8 @@ export class AuthService {
       throw new UnauthorizedException('Не авторизован');
     }
 
-    const sessionId = Number(data.cookies.sessionId);
-    if (!sessionId || !Number.isInteger(sessionId) || sessionId <= 0) {
+    const sessionId = data.cookies.sessionId;
+    if (!sessionId || !isUUID(sessionId)) {
       throw new UnauthorizedException('Не авторизован');
     }
 
@@ -127,8 +128,8 @@ export class AuthService {
       return;
     }
 
-    const sessionId = Number(data.cookies.sessionId);
-    if (!sessionId || !Number.isInteger(sessionId) || sessionId <= 0) {
+    const sessionId = data.cookies.sessionId;
+    if (!sessionId || !isUUID(sessionId)) {
       return;
     }
 
@@ -154,8 +155,8 @@ export class AuthService {
       return;
     }
 
-    const sessionId = Number(data.cookies.sessionId);
-    if (!sessionId || !Number.isInteger(sessionId) || sessionId <= 0) {
+    const sessionId = data.cookies.sessionId;
+    if (!sessionId || !isUUID(sessionId)) {
       return;
     }
 

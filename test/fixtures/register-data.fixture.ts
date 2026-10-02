@@ -1,6 +1,6 @@
 import type { RegisterUserDto } from '../../src/auth/dto/register.dto.js';
 
-export function createRegisterData(
+export function createRegisterRequestData(
   overrides: Partial<RegisterUserDto> = {},
 ): RegisterUserDto {
   return {

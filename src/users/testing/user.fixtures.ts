@@ -8,7 +8,7 @@ export function createPublicUserFixture(
   overrides: Partial<PublicUser> = {},
 ): PublicUser {
   return {
-    id: 1,
+    id: '00000000-0000-4000-8000-000000000001',
     email: 'user@greenshop.test',
     name: 'Тестовый пользователь',
     role: Role.USER,

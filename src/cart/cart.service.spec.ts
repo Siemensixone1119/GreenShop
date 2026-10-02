@@ -63,7 +63,9 @@ describe('CartService', () => {
       const details = createCartWithItemsFixture();
       cartRepository.findByUserId.mockResolvedValue(cart);
       cartRepository.findByUserIdWithItems.mockResolvedValue(details);
-      await expect(service.getMyCart(1)).resolves.toEqual(details);
+      await expect(
+        service.getMyCart('00000000-0000-4000-8000-000000000001'),
+      ).resolves.toEqual(details);
       expect(cartRepository.create).not.toHaveBeenCalled();
     });
 
@@ -73,14 +75,20 @@ describe('CartService', () => {
       cartRepository.findByUserId.mockResolvedValue(null);
       cartRepository.create.mockResolvedValue(cart);
       cartRepository.findByUserIdWithItems.mockResolvedValue(details);
-      await expect(service.getMyCart(1)).resolves.toEqual(details);
-      expect(cartRepository.create).toHaveBeenCalledWith(1);
+      await expect(
+        service.getMyCart('00000000-0000-4000-8000-000000000001'),
+      ).resolves.toEqual(details);
+      expect(cartRepository.create).toHaveBeenCalledWith(
+        '00000000-0000-4000-8000-000000000001',
+      );
     });
 
     it('выбрасывает ошибку, если корзина с позициями не найдена', async () => {
       cartRepository.findByUserId.mockResolvedValue(createCartFixture());
       cartRepository.findByUserIdWithItems.mockResolvedValue(null);
-      await expect(service.getMyCart(1)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.getMyCart('00000000-0000-4000-8000-000000000001'),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -88,7 +96,10 @@ describe('CartService', () => {
     it('не добавляет количество больше остатка', async () => {
       findVariant.mockResolvedValue(createProductVariantFixture({ stock: 2 }));
       await expect(
-        service.addItem(1, { productVariantId: 1, quantity: 3 }),
+        service.addItem('00000000-0000-4000-8000-000000000001', {
+          productVariantId: '00000000-0000-4000-8000-000000000001',
+          quantity: 3,
+        }),
       ).rejects.toThrow('Недостаточно товара на складе');
       expect(cartRepository.findByUserId).not.toHaveBeenCalled();
     });
@@ -102,7 +113,10 @@ describe('CartService', () => {
       itemRepository.findItem.mockResolvedValue(null);
       itemRepository.create.mockResolvedValue(item);
       await expect(
-        service.addItem(1, { productVariantId: variant.id, quantity: 2 }),
+        service.addItem('00000000-0000-4000-8000-000000000001', {
+          productVariantId: variant.id,
+          quantity: 2,
+        }),
       ).resolves.toEqual(item);
       expect(itemRepository.create).toHaveBeenCalledWith(
         cart.id,
@@ -119,8 +133,13 @@ describe('CartService', () => {
       cartRepository.create.mockResolvedValue(cart);
       itemRepository.findItem.mockResolvedValue(null);
       itemRepository.create.mockResolvedValue(createCartItemFixture());
-      await service.addItem(1, { productVariantId: variant.id, quantity: 1 });
-      expect(cartRepository.create).toHaveBeenCalledWith(1);
+      await service.addItem('00000000-0000-4000-8000-000000000001', {
+        productVariantId: variant.id,
+        quantity: 1,
+      });
+      expect(cartRepository.create).toHaveBeenCalledWith(
+        '00000000-0000-4000-8000-000000000001',
+      );
     });
 
     it('увеличивает количество существующей позиции', async () => {
@@ -133,7 +152,10 @@ describe('CartService', () => {
       itemRepository.findItem.mockResolvedValue(item);
       itemRepository.updateQuantity.mockResolvedValue(updated);
       await expect(
-        service.addItem(1, { productVariantId: variant.id, quantity: 3 }),
+        service.addItem('00000000-0000-4000-8000-000000000001', {
+          productVariantId: variant.id,
+          quantity: 3,
+        }),
       ).resolves.toEqual(updated);
       expect(itemRepository.updateQuantity).toHaveBeenCalledWith(item.id, 5);
     });
@@ -145,7 +167,10 @@ describe('CartService', () => {
         createCartItemFixture({ quantity: 3 }),
       );
       await expect(
-        service.addItem(1, { productVariantId: 1, quantity: 2 }),
+        service.addItem('00000000-0000-4000-8000-000000000001', {
+          productVariantId: '00000000-0000-4000-8000-000000000001',
+          quantity: 2,
+        }),
       ).rejects.toThrow(BadRequestException);
       expect(itemRepository.updateQuantity).not.toHaveBeenCalled();
     });
@@ -154,7 +179,9 @@ describe('CartService', () => {
   describe('updateQuantity', () => {
     it('выбрасывает ошибку, если ID варианта некорректен', async () => {
       await expect(
-        service.updateQuantity(1, 0, { quantity: 1 }),
+        service.updateQuantity('00000000-0000-4000-8000-000000000001', '', {
+          quantity: 1,
+        }),
       ).rejects.toThrow('Некорректный id варианта товара');
       expect(findVariant).not.toHaveBeenCalled();
     });
@@ -162,7 +189,11 @@ describe('CartService', () => {
     it('не устанавливает количество больше остатка', async () => {
       findVariant.mockResolvedValue(createProductVariantFixture({ stock: 2 }));
       await expect(
-        service.updateQuantity(1, 1, { quantity: 3 }),
+        service.updateQuantity(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+          { quantity: 3 },
+        ),
       ).rejects.toThrow('Недостаточно товара на складе');
     });
 
@@ -170,7 +201,11 @@ describe('CartService', () => {
       findVariant.mockResolvedValue(createProductVariantFixture());
       cartRepository.findByUserId.mockResolvedValue(null);
       await expect(
-        service.updateQuantity(1, 1, { quantity: 1 }),
+        service.updateQuantity(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+          { quantity: 1 },
+        ),
       ).rejects.toThrow('Корзина не найдена');
     });
 
@@ -179,7 +214,11 @@ describe('CartService', () => {
       cartRepository.findByUserId.mockResolvedValue(createCartFixture());
       itemRepository.findItem.mockResolvedValue(null);
       await expect(
-        service.updateQuantity(1, 1, { quantity: 1 }),
+        service.updateQuantity(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+          { quantity: 1 },
+        ),
       ).rejects.toThrow('Товар не найден в корзине');
     });
 
@@ -191,7 +230,11 @@ describe('CartService', () => {
       itemRepository.findItem.mockResolvedValue(item);
       itemRepository.updateQuantity.mockResolvedValue(updated);
       await expect(
-        service.updateQuantity(1, 1, { quantity: 4 }),
+        service.updateQuantity(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+          { quantity: 4 },
+        ),
       ).resolves.toEqual(updated);
       expect(itemRepository.updateQuantity).toHaveBeenCalledWith(item.id, 4);
     });
@@ -199,25 +242,31 @@ describe('CartService', () => {
 
   describe('removeItem', () => {
     it('выбрасывает ошибку, если ID варианта некорректен', async () => {
-      await expect(service.removeItem(1, 0)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.removeItem('00000000-0000-4000-8000-000000000001', ''),
+      ).rejects.toThrow(BadRequestException);
       expect(cartRepository.findByUserId).not.toHaveBeenCalled();
     });
 
     it('выбрасывает ошибку, если корзина не найдена', async () => {
       cartRepository.findByUserId.mockResolvedValue(null);
-      await expect(service.removeItem(1, 1)).rejects.toThrow(
-        'Корзина не найдена',
-      );
+      await expect(
+        service.removeItem(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+        ),
+      ).rejects.toThrow('Корзина не найдена');
     });
 
     it('выбрасывает ошибку, если позиции нет в корзине', async () => {
       cartRepository.findByUserId.mockResolvedValue(createCartFixture());
       itemRepository.findItem.mockResolvedValue(null);
-      await expect(service.removeItem(1, 1)).rejects.toThrow(
-        'Товар не найден в корзине',
-      );
+      await expect(
+        service.removeItem(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+        ),
+      ).rejects.toThrow('Товар не найден в корзине');
     });
 
     it('возвращает удалённую позицию', async () => {
@@ -225,7 +274,12 @@ describe('CartService', () => {
       cartRepository.findByUserId.mockResolvedValue(createCartFixture());
       itemRepository.findItem.mockResolvedValue(item);
       itemRepository.delete.mockResolvedValue(item);
-      await expect(service.removeItem(1, 1)).resolves.toEqual(item);
+      await expect(
+        service.removeItem(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+        ),
+      ).resolves.toEqual(item);
       expect(itemRepository.delete).toHaveBeenCalledWith(item.id);
     });
   });

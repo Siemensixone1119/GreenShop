@@ -70,20 +70,26 @@ describe('UsersService', () => {
   });
 
   it('выбрасывает ошибку, если ID пользователя некорректен', async () => {
-    await expect(service.findById(0)).rejects.toThrow(BadRequestException);
+    await expect(service.findById('')).rejects.toThrow(BadRequestException);
     expect(repository.findById).not.toHaveBeenCalled();
   });
 
   it('выбрасывает ошибку, если пользователь не найден', async () => {
     repository.findById.mockResolvedValue(null);
-    await expect(service.findById(1)).rejects.toThrow(NotFoundException);
+    await expect(
+      service.findById('00000000-0000-4000-8000-000000000001'),
+    ).rejects.toThrow(NotFoundException);
   });
 
   it('возвращает пользователя по id', async () => {
     const user = createPublicUserFixture();
     repository.findById.mockResolvedValue(user);
-    await expect(service.findById(1)).resolves.toEqual(user);
-    expect(repository.findById).toHaveBeenCalledWith(1);
+    await expect(
+      service.findById('00000000-0000-4000-8000-000000000001'),
+    ).resolves.toEqual(user);
+    expect(repository.findById).toHaveBeenCalledWith(
+      '00000000-0000-4000-8000-000000000001',
+    );
   });
 
   it.each([
@@ -130,20 +136,22 @@ describe('UsersService', () => {
 
   it('не обновляет отсутствующего пользователя', async () => {
     repository.findById.mockResolvedValue(null);
-    await expect(service.update(1, { name: 'Иван' })).rejects.toThrow(
-      NotFoundException,
-    );
+    await expect(
+      service.update('00000000-0000-4000-8000-000000000001', { name: 'Иван' }),
+    ).rejects.toThrow(NotFoundException);
     expect(repository.update).not.toHaveBeenCalled();
   });
 
   it('не устанавливает email другого пользователя', async () => {
     repository.findById.mockResolvedValue(createPublicUserFixture());
     repository.findByEmail.mockResolvedValue(
-      createPublicUserFixture({ id: 2 }),
+      createPublicUserFixture({ id: '00000000-0000-4000-8000-000000000002' }),
     );
-    await expect(service.update(1, { email: 'used@test.ru' })).rejects.toThrow(
-      ConflictException,
-    );
+    await expect(
+      service.update('00000000-0000-4000-8000-000000000001', {
+        email: 'used@test.ru',
+      }),
+    ).rejects.toThrow(ConflictException);
     expect(repository.update).not.toHaveBeenCalled();
   });
 
@@ -154,19 +162,29 @@ describe('UsersService', () => {
     repository.findByEmail.mockResolvedValue(user);
     repository.update.mockResolvedValue(updated);
     await expect(
-      service.update(1, { email: ` ${user.email} `, name: ' Новое имя ' }),
+      service.update('00000000-0000-4000-8000-000000000001', {
+        email: ` ${user.email} `,
+        name: ' Новое имя ',
+      }),
     ).resolves.toEqual(updated);
-    expect(repository.update).toHaveBeenCalledWith(1, {
-      email: user.email,
-      name: 'Новое имя',
-    });
+    expect(repository.update).toHaveBeenCalledWith(
+      '00000000-0000-4000-8000-000000000001',
+      {
+        email: user.email,
+        name: 'Новое имя',
+      },
+    );
   });
 
   it('возвращает удалённого пользователя', async () => {
     const user = createPublicUserFixture();
     repository.findById.mockResolvedValue(user);
     repository.delete.mockResolvedValue(user);
-    await expect(service.delete(1)).resolves.toEqual(user);
-    expect(repository.delete).toHaveBeenCalledWith(1);
+    await expect(
+      service.delete('00000000-0000-4000-8000-000000000001'),
+    ).resolves.toEqual(user);
+    expect(repository.delete).toHaveBeenCalledWith(
+      '00000000-0000-4000-8000-000000000001',
+    );
   });
 });

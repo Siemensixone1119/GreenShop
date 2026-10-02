@@ -49,20 +49,26 @@ describe('CategoriesService', () => {
   });
 
   it('выбрасывает ошибку, если ID категории некорректен', async () => {
-    await expect(service.findOne(0)).rejects.toThrow(BadRequestException);
+    await expect(service.findOne('')).rejects.toThrow(BadRequestException);
     expect(repository.findOne).not.toHaveBeenCalled();
   });
 
   it('выбрасывает ошибку, если категория не найдена', async () => {
     repository.findOne.mockResolvedValue(null);
-    await expect(service.findOne(1)).rejects.toThrow('Категория не найдена');
-    expect(repository.findOne).toHaveBeenCalledWith(1);
+    await expect(
+      service.findOne('00000000-0000-4000-8000-000000000001'),
+    ).rejects.toThrow('Категория не найдена');
+    expect(repository.findOne).toHaveBeenCalledWith(
+      '00000000-0000-4000-8000-000000000001',
+    );
   });
 
   it('возвращает найденную категорию', async () => {
     const category = createCategoryFixture();
     repository.findOne.mockResolvedValue(category);
-    await expect(service.findOne(1)).resolves.toEqual(category);
+    await expect(
+      service.findOne('00000000-0000-4000-8000-000000000001'),
+    ).resolves.toEqual(category);
   });
 
   it('возвращает созданную категорию', async () => {
@@ -75,9 +81,11 @@ describe('CategoriesService', () => {
 
   it('не обновляет отсутствующую категорию', async () => {
     repository.findOne.mockResolvedValue(null);
-    await expect(service.update(1, { name: 'Новое имя' })).rejects.toThrow(
-      NotFoundException,
-    );
+    await expect(
+      service.update('00000000-0000-4000-8000-000000000001', {
+        name: 'Новое имя',
+      }),
+    ).rejects.toThrow(NotFoundException);
     expect(repository.update).not.toHaveBeenCalled();
   });
 
@@ -86,18 +94,23 @@ describe('CategoriesService', () => {
     const updated = createCategoryFixture({ name: 'Новое имя' });
     repository.findOne.mockResolvedValue(category);
     repository.update.mockResolvedValue(updated);
-    await expect(service.update(1, { name: 'Новое имя' })).resolves.toEqual(
-      updated,
+    await expect(
+      service.update('00000000-0000-4000-8000-000000000001', {
+        name: 'Новое имя',
+      }),
+    ).resolves.toEqual(updated);
+    expect(repository.update).toHaveBeenCalledWith(
+      '00000000-0000-4000-8000-000000000001',
+      { name: 'Новое имя' },
     );
-    expect(repository.update).toHaveBeenCalledWith(1, { name: 'Новое имя' });
   });
 
   it('не удаляет категорию с товарами', async () => {
     repository.findOne.mockResolvedValue(createCategoryFixture());
     repository.hasProducts.mockResolvedValue(true);
-    await expect(service.delete(1)).rejects.toThrow(
-      'Нельзя удалить категорию, в которой есть товары',
-    );
+    await expect(
+      service.delete('00000000-0000-4000-8000-000000000001'),
+    ).rejects.toThrow('Нельзя удалить категорию, в которой есть товары');
     expect(repository.delete).not.toHaveBeenCalled();
   });
 
@@ -106,8 +119,14 @@ describe('CategoriesService', () => {
     repository.findOne.mockResolvedValue(category);
     repository.hasProducts.mockResolvedValue(false);
     repository.delete.mockResolvedValue(category);
-    await expect(service.delete(1)).resolves.toEqual(category);
-    expect(repository.hasProducts).toHaveBeenCalledWith(1);
-    expect(repository.delete).toHaveBeenCalledWith(1);
+    await expect(
+      service.delete('00000000-0000-4000-8000-000000000001'),
+    ).resolves.toEqual(category);
+    expect(repository.hasProducts).toHaveBeenCalledWith(
+      '00000000-0000-4000-8000-000000000001',
+    );
+    expect(repository.delete).toHaveBeenCalledWith(
+      '00000000-0000-4000-8000-000000000001',
+    );
   });
 });

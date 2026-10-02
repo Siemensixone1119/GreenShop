@@ -12,8 +12,8 @@ export function createProductImageFixture(
   overrides: Partial<ProductImage> = {},
 ): ProductImage {
   return {
-    id: 1,
-    productId: 1,
+    id: '00000000-0000-4000-8000-000000000001',
+    productId: '00000000-0000-4000-8000-000000000004',
     url: '/images/monstera.jpg',
     alt: 'Монстера',
     position: 1,
@@ -25,8 +25,8 @@ export function createProductVariantFixture(
   overrides: Partial<ProductVariant> = {},
 ): ProductVariant {
   return {
-    id: 1,
-    productId: 1,
+    id: '00000000-0000-4000-8000-000000000001',
+    productId: '00000000-0000-4000-8000-000000000004',
     size: Size.MEDIUM,
     price: 1000,
     stock: 5,
@@ -42,10 +42,10 @@ export function createProductFixture(
   overrides: Partial<ProductWithDetails> = {},
 ): ProductWithDetails {
   return {
-    id: 1,
+    id: '00000000-0000-4000-8000-000000000001',
     name: 'Монстера',
     description: 'Тестовое растение',
-    categoryId: 1,
+    categoryId: '00000000-0000-4000-8000-000000000005',
     createdAt: testDate,
     updatedAt: testDate,
 

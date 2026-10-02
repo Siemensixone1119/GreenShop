@@ -56,8 +56,8 @@ describe('ProductVariantService', () => {
 
   describe('findOne', () => {
     it.each([
-      [0, 1, 'Некорректный id товара'],
-      [1, 0, 'Некорректный id варианта'],
+      ['', '00000000-0000-4000-8000-000000000001', 'Некорректный id товара'],
+      ['00000000-0000-4000-8000-000000000001', '', 'Некорректный id варианта'],
     ])('проверяет идентификаторы', async (productId, variantId, message) => {
       await expect(service.findOne(productId, variantId)).rejects.toThrow(
         message,
@@ -67,38 +67,59 @@ describe('ProductVariantService', () => {
 
     it('выбрасывает ошибку, если вариант не найден', async () => {
       repository.findOneByProductId.mockResolvedValue(null);
-      await expect(service.findOne(1, 2)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.findOne(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000002',
+        ),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('возвращает вариант товара', async () => {
       const variant = createProductVariantFixture();
       repository.findOneByProductId.mockResolvedValue(variant);
-      await expect(service.findOne(1, 1)).resolves.toEqual(variant);
-      expect(repository.findOneByProductId).toHaveBeenCalledWith(1, 1);
+      await expect(
+        service.findOne(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+        ),
+      ).resolves.toEqual(variant);
+      expect(repository.findOneByProductId).toHaveBeenCalledWith(
+        '00000000-0000-4000-8000-000000000001',
+        '00000000-0000-4000-8000-000000000001',
+      );
     });
   });
 
   describe('findOneById', () => {
     it('выбрасывает ошибку, если ID варианта некорректен', async () => {
-      await expect(service.findOneById(0)).rejects.toThrow(BadRequestException);
+      await expect(service.findOneById('')).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     it('выбрасывает ошибку, если вариант не найден', async () => {
       repository.findOneById.mockResolvedValue(null);
-      await expect(service.findOneById(1)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.findOneById('00000000-0000-4000-8000-000000000001'),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('возвращает вариант по id', async () => {
       const variant = createProductVariantFixture();
       repository.findOneById.mockResolvedValue(variant);
-      await expect(service.findOneById(1)).resolves.toEqual(variant);
+      await expect(
+        service.findOneById('00000000-0000-4000-8000-000000000001'),
+      ).resolves.toEqual(variant);
     });
   });
 
   describe('findAll', () => {
     it('выбрасывает ошибку, если товар не найден', async () => {
       repository.findProduct.mockResolvedValue(false);
-      await expect(service.findAll(1)).rejects.toThrow('Товар не найден');
+      await expect(
+        service.findAll('00000000-0000-4000-8000-000000000001'),
+      ).rejects.toThrow('Товар не найден');
       expect(repository.findAllByProductId).not.toHaveBeenCalled();
     });
 
@@ -106,8 +127,12 @@ describe('ProductVariantService', () => {
       const variants = [createProductVariantFixture()];
       repository.findProduct.mockResolvedValue(true);
       repository.findAllByProductId.mockResolvedValue(variants);
-      await expect(service.findAll(1)).resolves.toEqual(variants);
-      expect(repository.findAllByProductId).toHaveBeenCalledWith(1);
+      await expect(
+        service.findAll('00000000-0000-4000-8000-000000000001'),
+      ).resolves.toEqual(variants);
+      expect(repository.findAllByProductId).toHaveBeenCalledWith(
+        '00000000-0000-4000-8000-000000000001',
+      );
     });
   });
 
@@ -122,14 +147,18 @@ describe('ProductVariantService', () => {
 
     it('не создаёт вариант отсутствующего товара', async () => {
       repository.findProduct.mockResolvedValue(false);
-      await expect(service.create(1, data)).rejects.toThrow(NotFoundException);
+      await expect(
+        service.create('00000000-0000-4000-8000-000000000001', data),
+      ).rejects.toThrow(NotFoundException);
       expect(repository.create).not.toHaveBeenCalled();
     });
 
     it('не создаёт повторяющийся размер', async () => {
       repository.findProduct.mockResolvedValue(true);
       repository.findBySize.mockResolvedValue(createProductVariantFixture());
-      await expect(service.create(1, data)).rejects.toThrow(ConflictException);
+      await expect(
+        service.create('00000000-0000-4000-8000-000000000001', data),
+      ).rejects.toThrow(ConflictException);
       expect(repository.create).not.toHaveBeenCalled();
     });
 
@@ -137,9 +166,9 @@ describe('ProductVariantService', () => {
       repository.findProduct.mockResolvedValue(true);
       repository.findBySize.mockResolvedValue(null);
       repository.findBySku.mockResolvedValue(createProductVariantFixture());
-      await expect(service.create(1, data)).rejects.toThrow(
-        'Вариант с таким артикулом уже существует',
-      );
+      await expect(
+        service.create('00000000-0000-4000-8000-000000000001', data),
+      ).rejects.toThrow('Вариант с таким артикулом уже существует');
     });
 
     it('возвращает созданный вариант', async () => {
@@ -148,17 +177,26 @@ describe('ProductVariantService', () => {
       repository.findBySize.mockResolvedValue(null);
       repository.findBySku.mockResolvedValue(null);
       repository.create.mockResolvedValue(variant);
-      await expect(service.create(1, data)).resolves.toEqual(variant);
-      expect(repository.create).toHaveBeenCalledWith(1, data);
+      await expect(
+        service.create('00000000-0000-4000-8000-000000000001', data),
+      ).resolves.toEqual(variant);
+      expect(repository.create).toHaveBeenCalledWith(
+        '00000000-0000-4000-8000-000000000001',
+        data,
+      );
     });
   });
 
   describe('update', () => {
     it('не обновляет вариант отсутствующего товара', async () => {
       repository.findOneByProductId.mockResolvedValue(null);
-      await expect(service.update(1, 1, { stock: 2 })).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.update(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+          { stock: 2 },
+        ),
+      ).rejects.toThrow(NotFoundException);
       expect(repository.update).not.toHaveBeenCalled();
     });
 
@@ -167,11 +205,17 @@ describe('ProductVariantService', () => {
         createProductVariantFixture(),
       );
       repository.findBySize.mockResolvedValue(
-        createProductVariantFixture({ id: 2 }),
+        createProductVariantFixture({
+          id: '00000000-0000-4000-8000-000000000002',
+        }),
       );
-      await expect(service.update(1, 1, { size: Size.LARGE })).rejects.toThrow(
-        'Вариант такого размера уже существует',
-      );
+      await expect(
+        service.update(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+          { size: Size.LARGE },
+        ),
+      ).rejects.toThrow('Вариант такого размера уже существует');
     });
 
     it('разрешает сохранить собственный размер и артикул', async () => {
@@ -182,8 +226,18 @@ describe('ProductVariantService', () => {
       repository.findBySize.mockResolvedValue(variant);
       repository.findBySku.mockResolvedValue(variant);
       repository.update.mockResolvedValue(updated);
-      await expect(service.update(1, 1, data)).resolves.toEqual(updated);
-      expect(repository.update).toHaveBeenCalledWith(1, 1, data);
+      await expect(
+        service.update(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+          data,
+        ),
+      ).resolves.toEqual(updated);
+      expect(repository.update).toHaveBeenCalledWith(
+        '00000000-0000-4000-8000-000000000001',
+        '00000000-0000-4000-8000-000000000001',
+        data,
+      );
     });
 
     it('не устанавливает артикул другого варианта', async () => {
@@ -191,10 +245,16 @@ describe('ProductVariantService', () => {
         createProductVariantFixture(),
       );
       repository.findBySku.mockResolvedValue(
-        createProductVariantFixture({ id: 2 }),
+        createProductVariantFixture({
+          id: '00000000-0000-4000-8000-000000000002',
+        }),
       );
       await expect(
-        service.update(1, 1, { sku: '0123456789124' }),
+        service.update(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+          { sku: '0123456789124' },
+        ),
       ).rejects.toThrow('Вариант с таким артикулом уже существует');
     });
   });
@@ -205,9 +265,12 @@ describe('ProductVariantService', () => {
         createProductVariantFixture(),
       );
       repository.countVariants.mockResolvedValue(1);
-      await expect(service.delete(1, 1)).rejects.toThrow(
-        'Нельзя удалить последний вариант товара',
-      );
+      await expect(
+        service.delete(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+        ),
+      ).rejects.toThrow('Нельзя удалить последний вариант товара');
       expect(repository.delete).not.toHaveBeenCalled();
     });
 
@@ -216,8 +279,16 @@ describe('ProductVariantService', () => {
       repository.findOneByProductId.mockResolvedValue(variant);
       repository.countVariants.mockResolvedValue(2);
       repository.delete.mockResolvedValue(variant);
-      await expect(service.delete(1, 1)).resolves.toEqual(variant);
-      expect(repository.delete).toHaveBeenCalledWith(1, 1);
+      await expect(
+        service.delete(
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000001',
+        ),
+      ).resolves.toEqual(variant);
+      expect(repository.delete).toHaveBeenCalledWith(
+        '00000000-0000-4000-8000-000000000001',
+        '00000000-0000-4000-8000-000000000001',
+      );
     });
   });
 });

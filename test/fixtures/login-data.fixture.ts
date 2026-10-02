@@ -1,6 +1,6 @@
 import type { LoginUserDto } from '../../src/auth/dto/login.dto.js';
 
-export function createLoginData(
+export function createLoginRequestData(
   overrides: Partial<LoginUserDto> = {},
 ): LoginUserDto {
   return {

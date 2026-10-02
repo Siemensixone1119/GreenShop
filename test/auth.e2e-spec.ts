@@ -15,12 +15,13 @@ import { PrismaService } from '../src/prisma/prisma.service.js';
 import request from 'supertest';
 import type { App } from 'supertest/types.js';
 import { Role } from '../generated/prisma/enums.js';
-import { createRegisterData } from './fixtures/register-data.fixture.js';
-import { createLoginData } from './fixtures/login-data.fixture.js';
+import { createRegisterRequestData } from './fixtures/register-data.fixture.js';
+import { createLoginRequestData } from './fixtures/login-data.fixture.js';
+import { clearDataDB } from './helpers/clear-data.js';
 
 type AuthResponseBody = {
   user: {
-    id: number;
+    id: string;
     email: string;
     name: string;
     role: string;
@@ -54,28 +55,22 @@ describe('Auth (e2e)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.session.deleteMany();
-    await prisma.cartItem.deleteMany();
-    await prisma.cart.deleteMany();
-    await prisma.orderItem.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.user.deleteMany();
+    await clearDataDB(prisma);
   });
 
   it('регистрирует пользователя', async () => {
-    const dataRegister = createRegisterData();
+    const registerRequestData = createRegisterRequestData();
 
     const response = await request(httpServer)
       .post('/api/auth/register')
-      .send(dataRegister);
+      .send(registerRequestData);
     const cookies = response.headers['set-cookie'];
-
     const body = response.body as AuthResponseBody;
 
     expect(response.status).toBe(201);
     expect(body.user).toMatchObject({
-      email: dataRegister.email,
-      name: dataRegister.name,
+      email: registerRequestData.email,
+      name: registerRequestData.name,
     });
     expect(body.user).not.toHaveProperty('password');
     expect(body.user).not.toHaveProperty('passwordHash');
@@ -90,12 +85,13 @@ describe('Auth (e2e)', () => {
   });
 
   it('отклоняет некорректные данные регистрации', async () => {
-    const dataRegister = createRegisterData();
+    const registerRequestData = createRegisterRequestData({
+      email: 'alexandragreenshop.test',
+    });
 
     const response = await request(httpServer)
       .post('/api/auth/register')
-      .send(dataRegister);
-
+      .send(registerRequestData);
     const body = response.body as ErrorResponseBody;
 
     expect(response.status).toBe(400);
@@ -103,16 +99,15 @@ describe('Auth (e2e)', () => {
   });
 
   it('не регистрирует пользователя с занятым email', async () => {
-    const dataRegister = createRegisterData();
+    const registerRequestData = createRegisterRequestData();
 
     await request(httpServer)
       .post('/api/auth/register')
-      .send(dataRegister)
+      .send(registerRequestData)
       .expect(201);
     const response = await request(httpServer)
       .post('/api/auth/register')
-      .send(dataRegister);
-
+      .send(registerRequestData);
     const body = response.body as ErrorResponseBody;
 
     expect(response.status).toBe(409);
@@ -120,23 +115,22 @@ describe('Auth (e2e)', () => {
   });
 
   it('авторизует пользователя', async () => {
-    const dataRegister = createRegisterData();
-    const dataLogin = createLoginData();
+    const registerRequestData = createRegisterRequestData();
+    const loginRequestData = createLoginRequestData();
 
     await request(httpServer)
       .post('/api/auth/register')
-      .send(dataRegister)
+      .send(registerRequestData)
       .expect(201);
     const response = await request(httpServer)
       .post('/api/auth/login')
-      .send(dataLogin);
+      .send(loginRequestData);
     const cookies = response.headers['set-cookie'];
-
     const body = response.body as AuthResponseBody;
 
     expect(response.status).toBe(200);
     expect(body.user).toMatchObject({
-      email: dataLogin.email,
+      email: loginRequestData.email,
     });
     expect(body.user).not.toHaveProperty('password');
     expect(body.user).not.toHaveProperty('passwordHash');
@@ -151,17 +145,16 @@ describe('Auth (e2e)', () => {
   });
 
   it('не авторизует пользователя с неверным паролем', async () => {
-    const dataRegister = createRegisterData();
-    const dataLogin = createLoginData();
+    const registerRequestData = createRegisterRequestData();
+    const loginRequestData = createLoginRequestData({ password: '123!' });
 
     await request(httpServer)
       .post('/api/auth/register')
-      .send(dataRegister)
+      .send(registerRequestData)
       .expect(201);
     const response = await request(httpServer)
       .post('/api/auth/login')
-      .send(dataLogin);
-
+      .send(loginRequestData);
     const body = response.body as ErrorResponseBody;
 
     expect(response.status).toBe(401);
@@ -169,33 +162,32 @@ describe('Auth (e2e)', () => {
   });
 
   it('возвращает текущего пользователя', async () => {
-    const dataRegister = createRegisterData();
+    const registerRequestData = createRegisterRequestData();
 
     const agent = request.agent(httpServer);
     const registration = await agent
       .post('/api/auth/register')
-      .send(dataRegister)
+      .send(registerRequestData)
       .expect(201);
     const response = await agent.get('/api/auth/me');
-
     const body = response.body as AuthResponseBody;
+    const registrationBody = registration.body as AuthResponseBody;
 
     expect(response.status).toBe(200);
     expect(body.user).toMatchObject({
-      id: registration.body.user.id,
-      email: dataRegister.email,
-      name: dataRegister.name,
+      id: registrationBody.user.id,
+      email: registerRequestData.email,
+      name: registerRequestData.name,
       role: Role.USER,
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
     });
-    expect(response.body.user).not.toHaveProperty('password');
-    expect(response.body.user).not.toHaveProperty('passwordHash');
+    expect(body.user).not.toHaveProperty('password');
+    expect(body.user).not.toHaveProperty('passwordHash');
   });
 
   it('не возвращает текущего пользователя без авторизации', async () => {
     const response = await request(httpServer).get('/api/auth/me');
-
     const body = response.body as ErrorResponseBody;
 
     expect(response.status).toBe(401);
@@ -203,20 +195,22 @@ describe('Auth (e2e)', () => {
   });
 
   it('обновляет токены', async () => {
-    const dataRegister = createRegisterData();
+    const registerRequestData = createRegisterRequestData();
 
     const agent = request.agent(httpServer);
-    await agent.post('/api/auth/register').send(dataRegister).expect(201);
+    await agent
+      .post('/api/auth/register')
+      .send(registerRequestData)
+      .expect(201);
     const response = await agent.post('/api/auth/refresh');
     const cookies = response.headers['set-cookie'];
-
     const body = response.body as AuthResponseBody;
 
     expect(response.status).toBe(200);
     expect(body.user).toMatchObject({
-      id: expect.any(Number),
-      email: dataRegister.email,
-      name: dataRegister.name,
+      id: expect.any(String),
+      email: registerRequestData.email,
+      name: registerRequestData.name,
       role: Role.USER,
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
@@ -234,10 +228,13 @@ describe('Auth (e2e)', () => {
   });
 
   it('завершает текущую сессию', async () => {
-    const dataRegister = createRegisterData();
+    const registerRequestData = createRegisterRequestData();
 
     const agent = request.agent(httpServer);
-    await agent.post('/api/auth/register').send(dataRegister).expect(201);
+    await agent
+      .post('/api/auth/register')
+      .send(registerRequestData)
+      .expect(201);
     const response = await agent.post('/api/auth/logout');
     await agent.get('/api/auth/me').expect(401);
 
@@ -245,13 +242,16 @@ describe('Auth (e2e)', () => {
   });
 
   it('завершает все сессии пользователя', async () => {
-    const dataRegister = createRegisterData();
-    const dataLogin = createLoginData();
+    const registerRequestData = createRegisterRequestData();
+    const loginRequestData = createLoginRequestData();
 
     const agent = request.agent(httpServer);
     const agent1 = request.agent(httpServer);
-    await agent.post('/api/auth/register').send(dataRegister).expect(201);
-    await agent1.post('/api/auth/login').send(dataLogin).expect(200);
+    await agent
+      .post('/api/auth/register')
+      .send(registerRequestData)
+      .expect(201);
+    await agent1.post('/api/auth/login').send(loginRequestData).expect(200);
     await agent.get('/api/auth/me').expect(200);
     await agent1.get('/api/auth/me').expect(200);
     const response = await agent1.post('/api/auth/logout-all');
@@ -262,6 +262,7 @@ describe('Auth (e2e)', () => {
   });
 
   afterAll(async () => {
+    await clearDataDB(prisma);
     await app.close();
   });
 });

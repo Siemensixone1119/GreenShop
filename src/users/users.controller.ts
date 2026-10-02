@@ -2,7 +2,7 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
+  ParseUUIDPipe,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service.js';
@@ -24,7 +24,7 @@ export class UsersController {
 
   @Roles(['ADMIN'])
   @Get(':userId')
-  findOne(@Param('userId', ParseIntPipe) userId: number): Promise<PublicUser> {
+  findOne(@Param('userId', ParseUUIDPipe) userId: string): Promise<PublicUser> {
     return this.userService.findById(userId);
   }
 }

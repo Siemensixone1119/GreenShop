@@ -34,8 +34,8 @@ export class UsersService {
     return this.userRepository.findAuthByEmail(email);
   }
 
-  async findById(userId: number): Promise<PublicUser> {
-    if (userId <= 0) {
+  async findById(userId: string): Promise<PublicUser> {
+    if (!userId) {
       throw new BadRequestException('Id не передан');
     }
 
@@ -78,11 +78,11 @@ export class UsersService {
     });
   }
 
-  async update(userId: number, data: UpdateUserData): Promise<PublicUser> {
+  async update(userId: string, data: UpdateUserData): Promise<PublicUser> {
     const email = data.email?.trim() ?? null;
     const name = data.name?.trim() ?? null;
 
-    if (userId <= 0) {
+    if (!userId) {
       throw new BadRequestException('Id не передан');
     }
 
@@ -106,8 +106,8 @@ export class UsersService {
     return this.userRepository.update(userId, updateData);
   }
 
-  async delete(userId: number): Promise<PublicUser> {
-    if (userId <= 0) {
+  async delete(userId: string): Promise<PublicUser> {
+    if (!userId) {
       throw new BadRequestException('Id не передан');
     }
 

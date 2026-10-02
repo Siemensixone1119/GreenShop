@@ -1,10 +1,9 @@
 import {
-  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   MaxLength,
-  Min,
 } from 'class-validator';
 import { Trim } from '../../common/decorators/trim.decorator.js';
 
@@ -23,7 +22,6 @@ export class UpdateProductDto {
   description?: string;
 
   @IsOptional()
-  @IsInt()
-  @Min(1)
-  categoryId?: number;
+  @IsUUID()
+  categoryId?: string;
 }

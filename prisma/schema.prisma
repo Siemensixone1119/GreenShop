@@ -4,9 +4,9 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider     = "prisma-client"
-  output       = "../generated/prisma"
-  moduleFormat = "esm"
+  provider        = "prisma-client"
+  output          = "../generated/prisma"
+  moduleFormat    = "esm"
   previewFeatures = ["typedSql"]
 }
 
@@ -36,10 +36,10 @@ enum Size {
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
+  id          String   @id @default(uuid()) @db.Uuid
   name        String
   description String?
-  categoryId  Int
+  categoryId  String   @db.Uuid
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -49,12 +49,12 @@ model Product {
 }
 
 model ProductVariant {
-  id              Int      @id @default(autoincrement())
-  productId       Int
+  id              String   @id @default(uuid()) @db.Uuid
+  productId       String   @db.Uuid
   size            Size
   price           Int
   stock           Int      @default(0)
-  sku             String  @unique
+  sku             String   @unique
   discountPercent Int      @default(0)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -67,7 +67,7 @@ model ProductVariant {
 }
 
 model Category {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid()) @db.Uuid
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -76,7 +76,7 @@ model Category {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
+  id           String   @id @default(uuid()) @db.Uuid
   email        String   @unique
   passwordHash String
   name         String
@@ -90,8 +90,8 @@ model User {
 }
 
 model Session {
-  id          Int       @id @default(autoincrement())
-  userId      Int
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @db.Uuid
   refreshHash String
   revokedAt   DateTime?
   expiresAt   DateTime
@@ -104,8 +104,8 @@ model Session {
 }
 
 model Cart {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @unique
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @db.Uuid
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -114,9 +114,9 @@ model Cart {
 }
 
 model CartItem {
-  id               Int      @id @default(autoincrement())
-  cartId           Int
-  productVariantId Int
+  id               String   @id @default(uuid()) @db.Uuid
+  cartId           String   @db.Uuid
+  productVariantId String   @db.Uuid
   quantity         Int
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -130,8 +130,8 @@ model CartItem {
 }
 
 model Order {
-  id         Int         @id @default(autoincrement())
-  userId     Int?
+  id         String      @id @default(uuid()) @db.Uuid
+  userId     String?     @db.Uuid
   status     OrderStatus @default(NEW)
   totalPrice Int
   createdAt  DateTime    @default(now())
@@ -154,9 +154,9 @@ model Order {
 }
 
 model OrderItem {
-  id               Int     @id @default(autoincrement())
-  orderId          Int
-  productVariantId Int?
+  id               String  @id @default(uuid()) @db.Uuid
+  orderId          String  @db.Uuid
+  productVariantId String? @db.Uuid
   productName      String
   price            Int
   size             Size
@@ -171,8 +171,8 @@ model OrderItem {
 }
 
 model ProductImage {
-  id        Int     @id @default(autoincrement())
-  productId Int
+  id        String  @id @default(uuid()) @db.Uuid
+  productId String  @db.Uuid
   url       String
   alt       String?
   position  Int

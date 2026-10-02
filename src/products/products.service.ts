@@ -37,8 +37,8 @@ export class ProductsService {
     return this.productsRepository.findAll(filters);
   }
 
-  async findOne(productId: number): Promise<ProductWithDetails> {
-    if (productId <= 0) {
+  async findOne(productId: string): Promise<ProductWithDetails> {
+    if (!productId) {
       throw new BadRequestException('Некорректный id товара');
     }
 
@@ -85,10 +85,10 @@ export class ProductsService {
   }
 
   async update(
-    productId: number,
+    productId: string,
     data: UpdateProductDto,
   ): Promise<ProductWithDetails> {
-    if (productId <= 0) {
+    if (!productId) {
       throw new BadRequestException('Некорректный id товара');
     }
 
@@ -100,8 +100,8 @@ export class ProductsService {
     return this.productsRepository.update(productId, data);
   }
 
-  async delete(productId: number): Promise<ProductWithDetails> {
-    if (productId <= 0) {
+  async delete(productId: string): Promise<ProductWithDetails> {
+    if (!productId) {
       throw new BadRequestException('Некорректный id товара');
     }
 
@@ -110,7 +110,7 @@ export class ProductsService {
   }
 
   async addImage(
-    productId: number,
+    productId: string,
     imageData: CreateProductImageDto,
   ): Promise<ProductImage> {
     const product = await this.findOne(productId);
@@ -125,8 +125,8 @@ export class ProductsService {
   }
 
   async updateImage(
-    productId: number,
-    imageId: number,
+    productId: string,
+    imageId: string,
     data: UpdateProductImageDto,
   ): Promise<ProductImage> {
     const product = await this.findOne(productId);
@@ -147,7 +147,7 @@ export class ProductsService {
     return this.productsRepository.updateImage(productId, imageId, data);
   }
 
-  async deleteImage(productId: number, imageId: number): Promise<ProductImage> {
+  async deleteImage(productId: string, imageId: string): Promise<ProductImage> {
     await this.findOne(productId);
     const image = await this.productsRepository.findImage(productId, imageId);
 
@@ -158,7 +158,7 @@ export class ProductsService {
   }
 
   async reorderImage(
-    productId: number,
+    productId: string,
     data: ReorderProductImagesDto,
   ): Promise<ProductImage[]> {
     const product = await this.findOne(productId);

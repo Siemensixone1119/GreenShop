@@ -17,8 +17,8 @@ export class CategoriesService {
     return this.categoriesRepository.findAll(query);
   }
 
-  async findOne(categoryId: number): Promise<Category> {
-    if (categoryId <= 0) {
+  async findOne(categoryId: string): Promise<Category> {
+    if (!categoryId) {
       throw new BadRequestException('некорректный id категории');
     }
 
@@ -35,8 +35,8 @@ export class CategoriesService {
     return this.categoriesRepository.create(data);
   }
 
-  async update(categoryId: number, data: UpdateCategoryDto): Promise<Category> {
-    if (categoryId <= 0) {
+  async update(categoryId: string, data: UpdateCategoryDto): Promise<Category> {
+    if (!categoryId) {
       throw new BadRequestException('некорректный id категории');
     }
 
@@ -44,8 +44,8 @@ export class CategoriesService {
     return this.categoriesRepository.update(categoryId, data);
   }
 
-  async delete(categoryId: number): Promise<Category> {
-    if (categoryId <= 0) {
+  async delete(categoryId: string): Promise<Category> {
+    if (!categoryId) {
       throw new BadRequestException('некорректный id категории');
     }
 

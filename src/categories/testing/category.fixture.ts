@@ -6,7 +6,7 @@ export function createCategoryFixture(
   overrides: Partial<Category> = {},
 ): Category {
   return {
-    id: 1,
+    id: '00000000-0000-4000-8000-000000000001',
     name: 'Растения',
     createdAt: testDate,
     updatedAt: testDate,

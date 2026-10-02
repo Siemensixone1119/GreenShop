@@ -7,7 +7,7 @@ import type { CartWithItems } from './types/cart-with-items.type.js';
 export class CartRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  findByUserId(userId: number): Promise<Cart | null> {
+  findByUserId(userId: string): Promise<Cart | null> {
     return this.prisma.cart.findUnique({
       where: {
         userId,
@@ -15,7 +15,7 @@ export class CartRepository {
     });
   }
 
-  findByUserIdWithItems(userId: number): Promise<CartWithItems | null> {
+  findByUserIdWithItems(userId: string): Promise<CartWithItems | null> {
     return this.prisma.cart.findUnique({
       where: {
         userId,
@@ -42,7 +42,7 @@ export class CartRepository {
     });
   }
 
-  create(userId: number): Promise<Cart> {
+  create(userId: string): Promise<Cart> {
     return this.prisma.cart.create({
       data: {
         userId,

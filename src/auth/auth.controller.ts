@@ -109,7 +109,7 @@ export class AuthController {
     response: Response,
     accessToken: string,
     refreshToken: string,
-    sessionId: number,
+    sessionId: string,
   ): void {
     response.cookie('accessToken', accessToken, {
       httpOnly: true,

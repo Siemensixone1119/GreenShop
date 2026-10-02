@@ -21,7 +21,7 @@ export class CategoriesRepository {
     });
   }
 
-  findOne(categoryId: number): Promise<Category | null> {
+  findOne(categoryId: string): Promise<Category | null> {
     return this.prisma.category.findUnique({
       where: {
         id: categoryId,
@@ -35,20 +35,20 @@ export class CategoriesRepository {
     });
   }
 
-  update(categoryId: number, data: UpdateCategoryDto): Promise<Category> {
+  update(categoryId: string, data: UpdateCategoryDto): Promise<Category> {
     return this.prisma.category.update({
       where: { id: categoryId },
       data,
     });
   }
 
-  delete(categoryId: number): Promise<Category> {
+  delete(categoryId: string): Promise<Category> {
     return this.prisma.category.delete({
       where: { id: categoryId },
     });
   }
 
-  async hasProducts(categoryId: number): Promise<boolean> {
+  async hasProducts(categoryId: string): Promise<boolean> {
     return (
       (await this.prisma.product.findFirst({
         where: { categoryId },

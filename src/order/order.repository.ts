@@ -10,9 +10,9 @@ export class OrderRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
   create(
-    userId: number,
+    userId: string,
     data: CreateOrderData,
-    cartId: number,
+    cartId: string,
   ): Promise<Order> {
     return this.prismaService.$transaction(async (tx) => {
       const order = await tx.order.create({
@@ -80,7 +80,7 @@ export class OrderRepository {
     });
   }
 
-  findByIdWithItems(orderId: number): Promise<OrderWithItems | null> {
+  findByIdWithItems(orderId: string): Promise<OrderWithItems | null> {
     return this.prismaService.order.findUnique({
       where: {
         id: orderId,
@@ -91,7 +91,7 @@ export class OrderRepository {
     });
   }
 
-  findByUserIdWithItems(userId: number): Promise<OrderWithItems[]> {
+  findByUserIdWithItems(userId: string): Promise<OrderWithItems[]> {
     return this.prismaService.order.findMany({
       where: {
         userId,
@@ -103,8 +103,8 @@ export class OrderRepository {
   }
 
   findByIdAndUserIdWithItems(
-    orderId: number,
-    userId: number,
+    orderId: string,
+    userId: string,
   ): Promise<OrderWithItems | null> {
     return this.prismaService.order.findUnique({
       where: {
@@ -125,7 +125,7 @@ export class OrderRepository {
     });
   }
 
-  updateStatus(orderId: number, status: OrderStatus): Promise<Order> {
+  updateStatus(orderId: string, status: OrderStatus): Promise<Order> {
     return this.prismaService.order.update({
       where: {
         id: orderId,

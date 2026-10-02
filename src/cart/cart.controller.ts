@@ -4,7 +4,7 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
+  ParseUUIDPipe,
   Patch,
   Post,
   UseGuards,
@@ -39,7 +39,7 @@ export class CartController {
   @Patch('items/:productVariantId')
   updateQuantity(
     @CurrentUser() user: PublicUser,
-    @Param('productVariantId', ParseIntPipe) productVariantId: number,
+    @Param('productVariantId', ParseUUIDPipe) productVariantId: string,
     @Body() data: UpdateCartItemDto,
   ): Promise<CartItem> {
     return this.cartService.updateQuantity(user.id, productVariantId, data);
@@ -48,7 +48,7 @@ export class CartController {
   @Delete('items/:productVariantId')
   removeItem(
     @CurrentUser() user: PublicUser,
-    @Param('productVariantId', ParseIntPipe) productVariantId: number,
+    @Param('productVariantId', ParseUUIDPipe) productVariantId: string,
   ): Promise<CartItem> {
     return this.cartService.removeItem(user.id, productVariantId);
   }

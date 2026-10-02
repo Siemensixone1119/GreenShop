@@ -126,7 +126,7 @@ describe('AuthService', () => {
     expect(result.user).not.toHaveProperty('passwordHash');
     expect(signAsync).toHaveBeenCalledWith({
       sub: authUser.id,
-      sessionId: 1,
+      sessionId: '00000000-0000-4000-8000-000000000001',
       role: authUser.role,
     });
   });
@@ -135,7 +135,12 @@ describe('AuthService', () => {
     it.each([
       { cookies: {} },
       { cookies: { refreshToken: 'token' } },
-      { cookies: { refreshToken: 'token', sessionId: 0 } },
+      {
+        cookies: {
+          refreshToken: 'token',
+          sessionId: '',
+        },
+      },
     ])('отклоняет запрос без корректных cookies', async (data) => {
       await expect(service.refresh(data)).rejects.toThrow('Не авторизован');
       expect(sessions.findActiveById).not.toHaveBeenCalled();
@@ -144,7 +149,12 @@ describe('AuthService', () => {
     it('отклоняет отсутствующую сессию', async () => {
       sessions.findActiveById.mockResolvedValue(null);
       await expect(
-        service.refresh({ cookies: { refreshToken: 'token', sessionId: 1 } }),
+        service.refresh({
+          cookies: {
+            refreshToken: 'token',
+            sessionId: '00000000-0000-4000-8000-000000000001',
+          },
+        }),
       ).rejects.toThrow(UnauthorizedException);
     });
 
@@ -154,9 +164,16 @@ describe('AuthService', () => {
       );
       sessions.revokeById.mockResolvedValue(createSessionFixture());
       await expect(
-        service.refresh({ cookies: { refreshToken: 'wrong', sessionId: 1 } }),
+        service.refresh({
+          cookies: {
+            refreshToken: 'wrong',
+            sessionId: '00000000-0000-4000-8000-000000000001',
+          },
+        }),
       ).rejects.toThrow(UnauthorizedException);
-      expect(sessions.revokeById).toHaveBeenCalledWith(1);
+      expect(sessions.revokeById).toHaveBeenCalledWith(
+        '00000000-0000-4000-8000-000000000001',
+      );
     });
 
     it('отзывает старую сессию и выдаёт новые токены', async () => {
@@ -171,10 +188,15 @@ describe('AuthService', () => {
       sessions.revokeById.mockResolvedValue(createSessionFixture());
       prepareIssuedTokens();
       const result = await service.refresh({
-        cookies: { refreshToken, sessionId: 1 },
+        cookies: {
+          refreshToken,
+          sessionId: '00000000-0000-4000-8000-000000000001',
+        },
       });
       expect(result.user).toEqual(user);
-      expect(sessions.revokeById).toHaveBeenCalledWith(1);
+      expect(sessions.revokeById).toHaveBeenCalledWith(
+        '00000000-0000-4000-8000-000000000001',
+      );
       expect(sessions.createSession).toHaveBeenCalledTimes(1);
     });
   });
@@ -190,7 +212,10 @@ describe('AuthService', () => {
         createSessionFixture({ refreshHash: await bcrypt.hash('correct', 4) }),
       );
       await service.logout({
-        cookies: { refreshToken: 'wrong', sessionId: 1 },
+        cookies: {
+          refreshToken: 'wrong',
+          sessionId: '00000000-0000-4000-8000-000000000001',
+        },
       });
       expect(sessions.revokeById).not.toHaveBeenCalled();
     });
@@ -203,8 +228,15 @@ describe('AuthService', () => {
         }),
       );
       sessions.revokeById.mockResolvedValue(createSessionFixture());
-      await service.logout({ cookies: { refreshToken, sessionId: 1 } });
-      expect(sessions.revokeById).toHaveBeenCalledWith(1);
+      await service.logout({
+        cookies: {
+          refreshToken,
+          sessionId: '00000000-0000-4000-8000-000000000001',
+        },
+      });
+      expect(sessions.revokeById).toHaveBeenCalledWith(
+        '00000000-0000-4000-8000-000000000001',
+      );
     });
   });
 

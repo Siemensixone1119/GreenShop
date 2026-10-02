@@ -19,7 +19,7 @@ export class OrderService {
     private readonly cartService: CartService,
   ) {}
 
-  async createOrder(userId: number, data: CreateOrderDto): Promise<Order> {
+  async createOrder(userId: string, data: CreateOrderDto): Promise<Order> {
     const cart = await this.cartService.getMyCart(userId);
 
     const cartItems = cart.items;
@@ -60,12 +60,12 @@ export class OrderService {
     return this.orderRepository.create(userId, orderData, cart.id);
   }
 
-  getMyOrders(userId: number): Promise<OrderWithItems[]> {
+  getMyOrders(userId: string): Promise<OrderWithItems[]> {
     return this.orderRepository.findByUserIdWithItems(userId);
   }
 
-  async getMyOrder(userId: number, orderId: number): Promise<OrderWithItems> {
-    if (orderId <= 0) {
+  async getMyOrder(userId: string, orderId: string): Promise<OrderWithItems> {
+    if (!orderId) {
       throw new BadRequestException('Некорректный id заказа');
     }
 
@@ -84,8 +84,8 @@ export class OrderService {
     return this.orderRepository.findAllWithItems();
   }
 
-  async getOrderById(orderId: number): Promise<OrderWithItems> {
-    if (orderId <= 0) {
+  async getOrderById(orderId: string): Promise<OrderWithItems> {
+    if (!orderId) {
       throw new BadRequestException('Некорректный id заказа');
     }
 
@@ -97,7 +97,7 @@ export class OrderService {
     return order;
   }
 
-  async updateStatus(orderId: number, status: OrderStatus): Promise<Order> {
+  async updateStatus(orderId: string, status: OrderStatus): Promise<Order> {
     await this.getOrderById(orderId);
     return this.orderRepository.updateStatus(orderId, status);
   }

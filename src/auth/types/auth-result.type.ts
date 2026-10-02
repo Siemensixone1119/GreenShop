@@ -4,5 +4,5 @@ export type AuthResult = {
   user: PublicUser;
   refreshToken: string;
   accessToken: string;
-  sessionId: number;
+  sessionId: string;
 };

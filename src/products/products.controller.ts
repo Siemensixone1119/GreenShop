@@ -7,7 +7,7 @@ import {
   Body,
   Patch,
   Delete,
-  ParseIntPipe,
+  ParseUUIDPipe,
   UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service.js';
@@ -35,7 +35,7 @@ export class ProductsController {
 
   @Get(':productId')
   findOne(
-    @Param('productId', ParseIntPipe) productId: number,
+    @Param('productId', ParseUUIDPipe) productId: string,
   ): Promise<ProductWithDetails> {
     return this.productsService.findOne(productId);
   }
@@ -51,7 +51,7 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':productId')
   update(
-    @Param('productId', ParseIntPipe) productId: number,
+    @Param('productId', ParseUUIDPipe) productId: string,
     @Body() body: UpdateProductDto,
   ): Promise<ProductWithDetails> {
     return this.productsService.update(productId, body);
@@ -61,7 +61,7 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':productId')
   delete(
-    @Param('productId', ParseIntPipe) productId: number,
+    @Param('productId', ParseUUIDPipe) productId: string,
   ): Promise<ProductWithDetails> {
     return this.productsService.delete(productId);
   }
@@ -70,7 +70,7 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post(':productId/images')
   addImage(
-    @Param('productId', ParseIntPipe) productId: number,
+    @Param('productId', ParseUUIDPipe) productId: string,
     @Body() body: CreateProductImageDto,
   ): Promise<ProductImage> {
     return this.productsService.addImage(productId, body);
@@ -80,7 +80,7 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':productId/images/reorder')
   reorderImage(
-    @Param('productId', ParseIntPipe) productId: number,
+    @Param('productId', ParseUUIDPipe) productId: string,
     @Body() body: ReorderProductImagesDto,
   ): Promise<ProductImage[]> {
     return this.productsService.reorderImage(productId, body);
@@ -90,8 +90,8 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':productId/images/:imageId')
   updateImage(
-    @Param('productId', ParseIntPipe) productId: number,
-    @Param('imageId', ParseIntPipe) imageId: number,
+    @Param('productId', ParseUUIDPipe) productId: string,
+    @Param('imageId', ParseUUIDPipe) imageId: string,
     @Body() body: UpdateProductImageDto,
   ): Promise<ProductImage> {
     return this.productsService.updateImage(productId, imageId, body);
@@ -101,8 +101,8 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':productId/images/:imageId')
   deleteImage(
-    @Param('productId', ParseIntPipe) productId: number,
-    @Param('imageId', ParseIntPipe) imageId: number,
+    @Param('productId', ParseUUIDPipe) productId: string,
+    @Param('imageId', ParseUUIDPipe) imageId: string,
   ): Promise<ProductImage> {
     return this.productsService.deleteImage(productId, imageId);
   }

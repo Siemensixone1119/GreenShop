@@ -2,12 +2,11 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
-  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   MaxLength,
-  Min,
   ValidateNested,
 } from 'class-validator';
 import { Trim } from '../../common/decorators/trim.decorator.js';
@@ -28,9 +27,8 @@ export class CreateProductDto {
   @MaxLength(2000)
   description?: string;
 
-  @IsInt()
-  @Min(1)
-  categoryId!: number;
+  @IsUUID()
+  categoryId!: string;
 
   @IsOptional()
   @IsArray()

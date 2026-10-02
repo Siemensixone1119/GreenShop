@@ -6,6 +6,7 @@ import {
   IsInt,
   IsOptional,
   IsString,
+  IsUUID,
   Max,
   MaxLength,
   Min,
@@ -25,10 +26,8 @@ export class ProductFilterDto {
   collection?: ProductCollection;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  categoryId?: number;
+  @IsUUID()
+  categoryId?: string;
 
   @IsOptional()
   @Type(() => Number)

@@ -1,5 +1,5 @@
 export type CreateSessionData = {
-  userId: number;
+  userId: string;
   refreshHash: string;
   expiresAt: Date;
 };

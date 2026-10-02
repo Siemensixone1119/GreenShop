@@ -7,8 +7,8 @@ const testDate = new Date('2026-01-01T00:00:00.000Z');
 
 export function createCartFixture(overrides: Partial<Cart> = {}): Cart {
   return {
-    id: 1,
-    userId: 1,
+    id: '00000000-0000-4000-8000-000000000001',
+    userId: '00000000-0000-4000-8000-000000000002',
     createdAt: testDate,
     updatedAt: testDate,
     ...overrides,
@@ -19,9 +19,9 @@ export function createCartItemFixture(
   overrides: Partial<CartItem> = {},
 ): CartItem {
   return {
-    id: 1,
-    cartId: 1,
-    productVariantId: 1,
+    id: '00000000-0000-4000-8000-000000000001',
+    cartId: '00000000-0000-4000-8000-000000000003',
+    productVariantId: '00000000-0000-4000-8000-000000000006',
     quantity: 2,
     createdAt: testDate,
     updatedAt: testDate,

@@ -3,7 +3,7 @@ import {
   Controller,
   Get,
   Param,
-  ParseIntPipe,
+  ParseUUIDPipe,
   Patch,
   Post,
   UseGuards,
@@ -34,7 +34,7 @@ export class OrderController {
   @Get('my/:orderId')
   getMyOrder(
     @CurrentUser() user: PublicUser,
-    @Param('orderId', ParseIntPipe) orderId: number,
+    @Param('orderId', ParseUUIDPipe) orderId: string,
   ): Promise<OrderWithItems> {
     return this.orderService.getMyOrder(user.id, orderId);
   }
@@ -48,7 +48,7 @@ export class OrderController {
   @Roles(['ADMIN'])
   @Get(':orderId')
   getOrderById(
-    @Param('orderId', ParseIntPipe) orderId: number,
+    @Param('orderId', ParseUUIDPipe) orderId: string,
   ): Promise<OrderWithItems> {
     return this.orderService.getOrderById(orderId);
   }
@@ -65,7 +65,7 @@ export class OrderController {
   @Roles(['ADMIN'])
   @Patch(':orderId/status')
   updateStatus(
-    @Param('orderId', ParseIntPipe) orderId: number,
+    @Param('orderId', ParseUUIDPipe) orderId: string,
     @Body() data: UpdateOrderStatusDto,
   ): Promise<Order> {
     return this.orderService.updateStatus(orderId, data.status);

@@ -4,7 +4,7 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
+  ParseUUIDPipe,
   Patch,
   Post,
   UseGuards,
@@ -23,15 +23,15 @@ export class ProductVariantController {
 
   @Get()
   findAll(
-    @Param('productId', ParseIntPipe) productId: number,
+    @Param('productId', ParseUUIDPipe) productId: string,
   ): Promise<ProductVariant[]> {
     return this.productVariantService.findAll(productId);
   }
 
   @Get(':variantId')
   findOne(
-    @Param('productId', ParseIntPipe) productId: number,
-    @Param('variantId', ParseIntPipe) variantId: number,
+    @Param('productId', ParseUUIDPipe) productId: string,
+    @Param('variantId', ParseUUIDPipe) variantId: string,
   ): Promise<ProductVariant> {
     return this.productVariantService.findOne(productId, variantId);
   }
@@ -40,7 +40,7 @@ export class ProductVariantController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
   create(
-    @Param('productId', ParseIntPipe) productId: number,
+    @Param('productId', ParseUUIDPipe) productId: string,
     @Body() data: CreateProductVariantDto,
   ): Promise<ProductVariant> {
     return this.productVariantService.create(productId, data);
@@ -50,8 +50,8 @@ export class ProductVariantController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':variantId')
   update(
-    @Param('productId', ParseIntPipe) productId: number,
-    @Param('variantId', ParseIntPipe) variantId: number,
+    @Param('productId', ParseUUIDPipe) productId: string,
+    @Param('variantId', ParseUUIDPipe) variantId: string,
     @Body() data: UpdateProductVariantDto,
   ): Promise<ProductVariant> {
     return this.productVariantService.update(productId, variantId, data);
@@ -61,8 +61,8 @@ export class ProductVariantController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':variantId')
   delete(
-    @Param('productId', ParseIntPipe) productId: number,
-    @Param('variantId', ParseIntPipe) variantId: number,
+    @Param('productId', ParseUUIDPipe) productId: string,
+    @Param('variantId', ParseUUIDPipe) variantId: string,
   ): Promise<ProductVariant> {
     return this.productVariantService.delete(productId, variantId);
   }

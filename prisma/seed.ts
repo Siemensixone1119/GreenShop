@@ -20,7 +20,7 @@ const prisma = new PrismaClient({
 async function createProductWithVariants(data: {
   name: string;
   description: string;
-  categoryId: number;
+  categoryId: string;
   skuBase: string;
   basePrice: number;
   baseStock: number;
@@ -64,7 +64,7 @@ async function createProductWithVariants(data: {
 }
 
 function getVariant(
-  product: { variants: Array<{ id: number; size: Size }> },
+  product: { variants: Array<{ id: string; size: Size }> },
   size: Size,
 ) {
   const variant = product.variants.find((item) => item.size === size);

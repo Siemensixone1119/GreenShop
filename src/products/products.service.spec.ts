@@ -119,7 +119,7 @@ describe('ProductsService', () => {
 
   describe('findOne', () => {
     it('выбрасывает ошибку, если ID товара некорректен', async () => {
-      const productId = 0;
+      const productId = '';
 
       const result = service.findOne(productId);
 
@@ -129,7 +129,7 @@ describe('ProductsService', () => {
     });
 
     it('выбрасывает ошибку, если товар не найден', async () => {
-      const productId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
 
       findOne.mockResolvedValue(null);
 
@@ -142,7 +142,7 @@ describe('ProductsService', () => {
     });
 
     it('возвращает найденный товар', async () => {
-      const productId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
 
       const expectedResult: ProductWithDetails = createProductFixture();
 
@@ -161,7 +161,7 @@ describe('ProductsService', () => {
       const data: CreateProductDto = {
         name: 'Монстера',
         description: 'Тестовое растение',
-        categoryId: 2,
+        categoryId: '00000000-0000-4000-8000-000000000002',
         images: [],
         variants: [],
       };
@@ -183,7 +183,7 @@ describe('ProductsService', () => {
       const data: CreateProductDto = {
         name: 'Монстера',
         description: 'Тестовое растение',
-        categoryId: 2,
+        categoryId: '00000000-0000-4000-8000-000000000002',
         images: [],
         variants: [
           {
@@ -222,7 +222,7 @@ describe('ProductsService', () => {
       const data: CreateProductDto = {
         name: 'Монстера',
         description: 'Тестовое растение',
-        categoryId: 2,
+        categoryId: '00000000-0000-4000-8000-000000000002',
         images: [],
         variants: [
           {
@@ -261,7 +261,7 @@ describe('ProductsService', () => {
       const data: CreateProductDto = {
         name: 'Монстера',
         description: 'Тестовое растение',
-        categoryId: 2,
+        categoryId: '00000000-0000-4000-8000-000000000002',
         images: [
           { url: '/images/monstera.jpg', alt: 'Монстера', position: 1 },
           { url: '/images/monstera.jpg', alt: 'Монстера', position: 1 },
@@ -288,7 +288,7 @@ describe('ProductsService', () => {
       const data: CreateProductDto = {
         name: 'Монстера',
         description: 'Тестовое растение',
-        categoryId: 1,
+        categoryId: '00000000-0000-4000-8000-000000000001',
         images: [],
         variants: [
           {
@@ -320,11 +320,11 @@ describe('ProductsService', () => {
 
   describe('update', () => {
     it('выбрасывает ошибку, если ID товара некорректен', async () => {
-      const productId = 0;
+      const productId = '';
       const data: UpdateProductDto = {
         name: 'Монстера',
         description: 'Тестовое растение',
-        categoryId: 1,
+        categoryId: '00000000-0000-4000-8000-000000000001',
       };
 
       const result = service.update(productId, data);
@@ -335,11 +335,11 @@ describe('ProductsService', () => {
     });
 
     it('выбрасывает ошибку, если категория не найдена', async () => {
-      const productId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
       const data = {
         name: 'Монстера',
         description: 'Тестовое растение',
-        categoryId: 1,
+        categoryId: '00000000-0000-4000-8000-000000000001',
       } satisfies UpdateProductDto;
 
       findCategory.mockRejectedValue(
@@ -356,11 +356,11 @@ describe('ProductsService', () => {
     });
 
     it('выбрасывает ошибку, если товар не найден', async () => {
-      const productId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
       const data = {
         name: 'Монстера',
         description: 'Тестовое растение',
-        categoryId: 1,
+        categoryId: '00000000-0000-4000-8000-000000000001',
       } satisfies UpdateProductDto;
 
       const expectedFindCategoryResult = createCategoryFixture();
@@ -380,11 +380,11 @@ describe('ProductsService', () => {
     });
 
     it('возвращает обновлённый товар', async () => {
-      const productId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
       const data = {
         name: 'Монстера',
         description: 'Тестовое растение',
-        categoryId: 1,
+        categoryId: '00000000-0000-4000-8000-000000000001',
       } satisfies UpdateProductDto;
 
       const product: ProductWithDetails = createProductFixture();
@@ -392,7 +392,7 @@ describe('ProductsService', () => {
       const expectedResult: ProductWithDetails = createProductFixture({
         name: 'Фикус',
         description: 'Тестовое растение1',
-        categoryId: 2,
+        categoryId: '00000000-0000-4000-8000-000000000002',
       });
 
       findOne.mockResolvedValue(product);
@@ -413,7 +413,7 @@ describe('ProductsService', () => {
 
   describe('update без categoryId', () => {
     it('возвращает обновлённый товар без поиска категории', async () => {
-      const productId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
       const data = { name: 'Фикус' } satisfies UpdateProductDto;
       const product = createProductFixture();
       const expectedResult = createProductFixture({ name: data.name });
@@ -434,7 +434,7 @@ describe('ProductsService', () => {
 
   describe('delete', () => {
     it('выбрасывает ошибку, если ID товара некорректен', async () => {
-      const productId = 0;
+      const productId = '';
       const result = service.delete(productId);
 
       await expect(result).rejects.toThrow(BadRequestException);
@@ -443,7 +443,7 @@ describe('ProductsService', () => {
     });
 
     it('выбрасывает ошибку, если товар не найден', async () => {
-      const productId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
 
       findOne.mockResolvedValue(null);
 
@@ -457,7 +457,7 @@ describe('ProductsService', () => {
     });
 
     it('возвращает удалённый товар', async () => {
-      const productId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
       const expectedResult: ProductWithDetails = createProductFixture();
 
       findOne.mockResolvedValue(expectedResult);
@@ -475,7 +475,7 @@ describe('ProductsService', () => {
 
   describe('addImage', () => {
     it('выбрасывает ошибку, если товар не найден', async () => {
-      const productId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
 
       const image = {
         url: '/images/monstera.jpg',
@@ -495,7 +495,7 @@ describe('ProductsService', () => {
     });
 
     it('выбрасывает ошибку, если позиция изображения занята', async () => {
-      const productId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
       const expectedResult: ProductWithDetails = createProductFixture();
 
       const image = {
@@ -518,7 +518,7 @@ describe('ProductsService', () => {
     });
 
     it('возвращает добавленное изображение', async () => {
-      const productId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
       const expectedFindResult: ProductWithDetails = createProductFixture();
       const expectedAddResult: ProductImage = createProductImageFixture();
 
@@ -543,8 +543,8 @@ describe('ProductsService', () => {
 
   describe('updateImage', () => {
     it('выбрасывает ошибку, если товар не найден', async () => {
-      const productId = 1;
-      const imageId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
+      const imageId = '00000000-0000-4000-8000-000000000001';
       const data = {
         alt: 'photo2',
       };
@@ -560,8 +560,8 @@ describe('ProductsService', () => {
     });
 
     it('выбрасывает ошибку, если изображение не найдено', async () => {
-      const productId = 1;
-      const imageId = 2;
+      const productId = '00000000-0000-4000-8000-000000000001';
+      const imageId = '00000000-0000-4000-8000-000000000002';
       const data = {
         alt: 'photo2',
       };
@@ -582,8 +582,8 @@ describe('ProductsService', () => {
     });
 
     it('выбрасывает ошибку, если позиция занята другим изображением', async () => {
-      const productId = 1;
-      const imageId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
+      const imageId = '00000000-0000-4000-8000-000000000001';
       const data = {
         alt: 'photo2',
         position: 2,
@@ -592,7 +592,10 @@ describe('ProductsService', () => {
       const expectedFindResult = createProductFixture({
         images: [
           createProductImageFixture(),
-          createProductImageFixture({ id: 2, position: 2 }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000002',
+            position: 2,
+          }),
         ],
       });
       const expectedFindImageResult = createProductImageFixture();
@@ -613,8 +616,8 @@ describe('ProductsService', () => {
     });
 
     it('возвращает обновлённое изображение', async () => {
-      const productId = 1;
-      const imageId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
+      const imageId = '00000000-0000-4000-8000-000000000001';
       const data = {
         alt: 'photo2',
         position: 2,
@@ -645,12 +648,18 @@ describe('ProductsService', () => {
 
   describe('updateImage без изменения position', () => {
     it('возвращает обновлённое изображение при сохранении собственной позиции', async () => {
-      const productId = 1;
-      const imageId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
+      const imageId = '00000000-0000-4000-8000-000000000001';
       const data = { alt: 'Новое описание', position: 1 };
       const image = createProductImageFixture({ id: imageId, position: 1 });
       const product = createProductFixture({
-        images: [image, createProductImageFixture({ id: 2, position: 2 })],
+        images: [
+          image,
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000002',
+            position: 2,
+          }),
+        ],
       });
       const expectedResult = createProductImageFixture({
         ...data,
@@ -675,8 +684,8 @@ describe('ProductsService', () => {
 
   describe('deleteImage', () => {
     it('выбрасывает ошибку, если товар не найден', async () => {
-      const productId = 1;
-      const imageId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
+      const imageId = '00000000-0000-4000-8000-000000000001';
 
       findOne.mockResolvedValue(null);
 
@@ -689,8 +698,8 @@ describe('ProductsService', () => {
     });
 
     it('выбрасывает ошибку, если изображение не найдено', async () => {
-      const productId = 1;
-      const imageId = 2;
+      const productId = '00000000-0000-4000-8000-000000000001';
+      const imageId = '00000000-0000-4000-8000-000000000002';
 
       const expectedFindResult = createProductFixture();
 
@@ -708,8 +717,8 @@ describe('ProductsService', () => {
     });
 
     it('возвращает удалённое изображение', async () => {
-      const productId = 1;
-      const imageId = 1;
+      const productId = '00000000-0000-4000-8000-000000000001';
+      const imageId = '00000000-0000-4000-8000-000000000001';
 
       const expectedFindResult = createProductFixture();
       const expectedFindImageResult = createProductImageFixture();
@@ -732,8 +741,21 @@ describe('ProductsService', () => {
 
   describe('reorderImage', () => {
     it('выбрасывает ошибку, если товар не найден', async () => {
-      const productId = 1;
-      const data = { imageIds: [8, 9, 1, 2, 3, 5, 6, 4, 7, 10] };
+      const productId = '00000000-0000-4000-8000-000000000001';
+      const data = {
+        imageIds: [
+          '00000000-0000-4000-8000-000000000008',
+          '00000000-0000-4000-8000-000000000009',
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000002',
+          '00000000-0000-4000-8000-000000000003',
+          '00000000-0000-4000-8000-000000000005',
+          '00000000-0000-4000-8000-000000000006',
+          '00000000-0000-4000-8000-000000000004',
+          '00000000-0000-4000-8000-000000000007',
+          '00000000-0000-4000-8000-000000000010',
+        ],
+      };
 
       findOne.mockResolvedValue(null);
 
@@ -746,21 +768,64 @@ describe('ProductsService', () => {
     });
 
     it('выбрасывает ошибку, если ID изображений повторяются', async () => {
-      const productId = 1;
-      const data = { imageIds: [8, 9, 1, 2, 5, 5, 6, 4, 7, 10] };
+      const productId = '00000000-0000-4000-8000-000000000001';
+      const data = {
+        imageIds: [
+          '00000000-0000-4000-8000-000000000008',
+          '00000000-0000-4000-8000-000000000009',
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000002',
+          '00000000-0000-4000-8000-000000000005',
+          '00000000-0000-4000-8000-000000000005',
+          '00000000-0000-4000-8000-000000000006',
+          '00000000-0000-4000-8000-000000000004',
+          '00000000-0000-4000-8000-000000000007',
+          '00000000-0000-4000-8000-000000000010',
+        ],
+      };
 
       const expectedFindResult = createProductFixture({
         images: [
-          createProductImageFixture({ id: 1, position: 1 }),
-          createProductImageFixture({ id: 2, position: 2 }),
-          createProductImageFixture({ id: 3, position: 3 }),
-          createProductImageFixture({ id: 4, position: 4 }),
-          createProductImageFixture({ id: 5, position: 5 }),
-          createProductImageFixture({ id: 6, position: 6 }),
-          createProductImageFixture({ id: 7, position: 7 }),
-          createProductImageFixture({ id: 8, position: 8 }),
-          createProductImageFixture({ id: 9, position: 9 }),
-          createProductImageFixture({ id: 10, position: 10 }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000001',
+            position: 1,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000002',
+            position: 2,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000003',
+            position: 3,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000004',
+            position: 4,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000005',
+            position: 5,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000006',
+            position: 6,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000007',
+            position: 7,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000008',
+            position: 8,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000009',
+            position: 9,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000010',
+            position: 10,
+          }),
         ],
       });
 
@@ -775,21 +840,63 @@ describe('ProductsService', () => {
     });
 
     it('выбрасывает ошибку, если переданы не все изображения товара', async () => {
-      const productId = 1;
-      const data = { imageIds: [8, 9, 1, 2, 3, 5, 6, 4, 7] };
+      const productId = '00000000-0000-4000-8000-000000000001';
+      const data = {
+        imageIds: [
+          '00000000-0000-4000-8000-000000000008',
+          '00000000-0000-4000-8000-000000000009',
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000002',
+          '00000000-0000-4000-8000-000000000003',
+          '00000000-0000-4000-8000-000000000005',
+          '00000000-0000-4000-8000-000000000006',
+          '00000000-0000-4000-8000-000000000004',
+          '00000000-0000-4000-8000-000000000007',
+        ],
+      };
 
       const expectedFindResult = createProductFixture({
         images: [
-          createProductImageFixture({ id: 1, position: 1 }),
-          createProductImageFixture({ id: 2, position: 2 }),
-          createProductImageFixture({ id: 3, position: 3 }),
-          createProductImageFixture({ id: 4, position: 4 }),
-          createProductImageFixture({ id: 5, position: 5 }),
-          createProductImageFixture({ id: 6, position: 6 }),
-          createProductImageFixture({ id: 7, position: 7 }),
-          createProductImageFixture({ id: 8, position: 8 }),
-          createProductImageFixture({ id: 9, position: 9 }),
-          createProductImageFixture({ id: 10, position: 10 }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000001',
+            position: 1,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000002',
+            position: 2,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000003',
+            position: 3,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000004',
+            position: 4,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000005',
+            position: 5,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000006',
+            position: 6,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000007',
+            position: 7,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000008',
+            position: 8,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000009',
+            position: 9,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000010',
+            position: 10,
+          }),
         ],
       });
 
@@ -806,21 +913,64 @@ describe('ProductsService', () => {
     });
 
     it('выбрасывает ошибку, если изображение не принадлежит товару', async () => {
-      const productId = 1;
-      const data = { imageIds: [8, 9, 1, 3, 2, 5, 6, 4, 7, 11] };
+      const productId = '00000000-0000-4000-8000-000000000001';
+      const data = {
+        imageIds: [
+          '00000000-0000-4000-8000-000000000008',
+          '00000000-0000-4000-8000-000000000009',
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000003',
+          '00000000-0000-4000-8000-000000000002',
+          '00000000-0000-4000-8000-000000000005',
+          '00000000-0000-4000-8000-000000000006',
+          '00000000-0000-4000-8000-000000000004',
+          '00000000-0000-4000-8000-000000000007',
+          '00000000-0000-4000-8000-000000000011',
+        ],
+      };
 
       const expectedFindResult = createProductFixture({
         images: [
-          createProductImageFixture({ id: 1, position: 1 }),
-          createProductImageFixture({ id: 2, position: 2 }),
-          createProductImageFixture({ id: 3, position: 3 }),
-          createProductImageFixture({ id: 4, position: 4 }),
-          createProductImageFixture({ id: 5, position: 5 }),
-          createProductImageFixture({ id: 6, position: 6 }),
-          createProductImageFixture({ id: 7, position: 7 }),
-          createProductImageFixture({ id: 8, position: 8 }),
-          createProductImageFixture({ id: 9, position: 9 }),
-          createProductImageFixture({ id: 10, position: 10 }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000001',
+            position: 1,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000002',
+            position: 2,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000003',
+            position: 3,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000004',
+            position: 4,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000005',
+            position: 5,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000006',
+            position: 6,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000007',
+            position: 7,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000008',
+            position: 8,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000009',
+            position: 9,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000010',
+            position: 10,
+          }),
         ],
       });
 
@@ -835,35 +985,108 @@ describe('ProductsService', () => {
     });
 
     it('возвращает изображения в обновлённом порядке', async () => {
-      const productId = 1;
-      const data = { imageIds: [8, 9, 1, 3, 2, 5, 6, 4, 7, 10] };
+      const productId = '00000000-0000-4000-8000-000000000001';
+      const data = {
+        imageIds: [
+          '00000000-0000-4000-8000-000000000008',
+          '00000000-0000-4000-8000-000000000009',
+          '00000000-0000-4000-8000-000000000001',
+          '00000000-0000-4000-8000-000000000003',
+          '00000000-0000-4000-8000-000000000002',
+          '00000000-0000-4000-8000-000000000005',
+          '00000000-0000-4000-8000-000000000006',
+          '00000000-0000-4000-8000-000000000004',
+          '00000000-0000-4000-8000-000000000007',
+          '00000000-0000-4000-8000-000000000010',
+        ],
+      };
 
       const expectedFindResult = createProductFixture({
         images: [
-          createProductImageFixture({ id: 1, position: 1 }),
-          createProductImageFixture({ id: 2, position: 2 }),
-          createProductImageFixture({ id: 3, position: 3 }),
-          createProductImageFixture({ id: 4, position: 4 }),
-          createProductImageFixture({ id: 5, position: 5 }),
-          createProductImageFixture({ id: 6, position: 6 }),
-          createProductImageFixture({ id: 7, position: 7 }),
-          createProductImageFixture({ id: 8, position: 8 }),
-          createProductImageFixture({ id: 9, position: 9 }),
-          createProductImageFixture({ id: 10, position: 10 }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000001',
+            position: 1,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000002',
+            position: 2,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000003',
+            position: 3,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000004',
+            position: 4,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000005',
+            position: 5,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000006',
+            position: 6,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000007',
+            position: 7,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000008',
+            position: 8,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000009',
+            position: 9,
+          }),
+          createProductImageFixture({
+            id: '00000000-0000-4000-8000-000000000010',
+            position: 10,
+          }),
         ],
       });
 
       const expectReorderResult = [
-        createProductImageFixture({ id: 8, position: 1 }),
-        createProductImageFixture({ id: 9, position: 2 }),
-        createProductImageFixture({ id: 1, position: 3 }),
-        createProductImageFixture({ id: 3, position: 4 }),
-        createProductImageFixture({ id: 2, position: 5 }),
-        createProductImageFixture({ id: 5, position: 6 }),
-        createProductImageFixture({ id: 6, position: 7 }),
-        createProductImageFixture({ id: 4, position: 8 }),
-        createProductImageFixture({ id: 7, position: 9 }),
-        createProductImageFixture({ id: 10, position: 10 }),
+        createProductImageFixture({
+          id: '00000000-0000-4000-8000-000000000008',
+          position: 1,
+        }),
+        createProductImageFixture({
+          id: '00000000-0000-4000-8000-000000000009',
+          position: 2,
+        }),
+        createProductImageFixture({
+          id: '00000000-0000-4000-8000-000000000001',
+          position: 3,
+        }),
+        createProductImageFixture({
+          id: '00000000-0000-4000-8000-000000000003',
+          position: 4,
+        }),
+        createProductImageFixture({
+          id: '00000000-0000-4000-8000-000000000002',
+          position: 5,
+        }),
+        createProductImageFixture({
+          id: '00000000-0000-4000-8000-000000000005',
+          position: 6,
+        }),
+        createProductImageFixture({
+          id: '00000000-0000-4000-8000-000000000006',
+          position: 7,
+        }),
+        createProductImageFixture({
+          id: '00000000-0000-4000-8000-000000000004',
+          position: 8,
+        }),
+        createProductImageFixture({
+          id: '00000000-0000-4000-8000-000000000007',
+          position: 9,
+        }),
+        createProductImageFixture({
+          id: '00000000-0000-4000-8000-000000000010',
+          position: 10,
+        }),
       ];
 
       findOne.mockResolvedValue(expectedFindResult);
