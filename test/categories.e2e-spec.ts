@@ -30,7 +30,6 @@ type CategoryBody = {
   createdAt: string;
   updatedAt: string;
 };
-type UserBody = { user: { id: string } };
 type ErrorBody = { message: string };
 
 describe('Categories (e2e)', () => {

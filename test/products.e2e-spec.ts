@@ -24,11 +24,9 @@ import {
   createProductImageFixture,
   createProductRequestData,
   createProductVariantFixture,
-  createProductVariantRequestData,
   createUpdateProductRequestData,
 } from './fixtures/product.fixture.js';
 
-type UserResponseBody = { user: { id: string } };
 type ProductBody = {
   id: string;
   name: string;

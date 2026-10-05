@@ -16,11 +16,20 @@ import { LoginUserDto } from './dto/login.dto.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
 import type { PublicUser } from '../users/types/public-user.type.js';
 import { CurrentUser } from './decorators/current-user.decorator.js';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  private readonly isProduction = process.env.NODE_ENV === 'production';
+
+  @Throttle({
+    default: {
+      limit: 10,
+      ttl: 60_000,
+    },
+  })
   @Post('register')
   async register(
     @Body() body: RegisterUserDto,
@@ -41,6 +50,12 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @Throttle({
+    default: {
+      limit: 10,
+      ttl: 60_000,
+    },
+  })
   @Post('login')
   async login(
     @Body() body: LoginUserDto,
@@ -61,6 +76,12 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @Throttle({
+    default: {
+      limit: 20,
+      ttl: 60_000,
+    },
+  })
   @Post('refresh')
   async refresh(
     @Req() request: Request,
@@ -112,23 +133,26 @@ export class AuthController {
     sessionId: string,
   ): void {
     response.cookie('accessToken', accessToken, {
+      path: '/',
       httpOnly: true,
       sameSite: 'lax',
-      secure: false,
+      secure: this.isProduction,
       maxAge: 15 * 60 * 1000,
     });
 
     response.cookie('refreshToken', refreshToken, {
+      path: '/',
       httpOnly: true,
       sameSite: 'lax',
-      secure: false,
+      secure: this.isProduction,
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
     response.cookie('sessionId', sessionId, {
+      path: '/',
       httpOnly: true,
       sameSite: 'lax',
-      secure: false,
+      secure: this.isProduction,
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
   }
@@ -137,19 +161,19 @@ export class AuthController {
     response.clearCookie('accessToken', {
       path: '/',
       sameSite: 'lax',
-      secure: false,
+      secure: this.isProduction,
       httpOnly: true,
     });
     response.clearCookie('refreshToken', {
       path: '/',
       sameSite: 'lax',
-      secure: false,
+      secure: this.isProduction,
       httpOnly: true,
     });
     response.clearCookie('sessionId', {
       path: '/',
       sameSite: 'lax',
-      secure: false,
+      secure: this.isProduction,
       httpOnly: true,
     });
   }

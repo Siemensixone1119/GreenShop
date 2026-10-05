@@ -88,6 +88,7 @@ describe('Orders (e2e)', () => {
     const response = await agent.post('/api/order').send(requestData);
     const body = response.body as OrderBody;
     const cartResponse = await agent.get('/api/cart');
+    const cartBody = cartResponse.body as { items: unknown[] };
 
     expect(response.status).toBe(201);
     expect(body).toMatchObject({
@@ -95,7 +96,7 @@ describe('Orders (e2e)', () => {
       status: OrderStatus.NEW,
       totalPrice: 1800,
     });
-    expect(cartResponse.body.items).toHaveLength(0);
+    expect(cartBody.items).toHaveLength(0);
     await expect(
       prisma.productVariant.findUnique({ where: { id: variant.id } }),
     ).resolves.toMatchObject({ stock: 3 });

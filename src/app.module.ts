@@ -12,6 +12,8 @@ import { CartModule } from './cart/cart.module.js';
 import { OrderModule } from './order/order.module.js';
 import { validateEnv } from './config/validate-env.js';
 import { ProductVariantModule } from './product-variant/product-variant.module.js';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -28,8 +30,20 @@ import { ProductVariantModule } from './product-variant/product-variant.module.j
     CartModule,
     OrderModule,
     ProductVariantModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60_000,
+        limit: 100,
+      },
+    ]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
