@@ -1,98 +1,100 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# GreenShop API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend интернет-магазина декоративных растений. Проект построен на NestJS, TypeScript, Prisma и PostgreSQL. API предоставляет каталог с фильтрацией и пагинацией, варианты товаров, корзину, заказы, регистрацию и авторизацию с cookie-сессиями, а также административные операции.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Быстрый запуск для проверки
 
-## Description
+Нужны Git, Node.js 22 или новее, npm и Docker с Compose.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+1. Клонируйте репозиторий с GitHub и откройте его каталог в терминале:
 
-## Project setup
+   ```bash
+   cd greenshop-backend
+   ```
 
-```bash
-$ npm install
-```
+2. Создайте локальный файл окружения:
 
-## Compile and run the project
+   ```bash
+   cp .env.example .env
+   ```
 
-```bash
-# development
-$ npm run start
+   В `.env` замените `JWT_ACCESS_SECRET` на случайную строку не короче 32 символов. Например, сгенерируйте её командой `openssl rand -hex 32`. Не публикуйте `.env` и не отправляйте его в Git.
 
-# watch mode
-$ npm run start:dev
+3. Установите зависимости, сгенерируйте Prisma Client и запустите PostgreSQL вместе с API:
 
-# production mode
-$ npm run start:prod
-```
+   ```bash
+   npm ci
+   npx prisma generate
+   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d
+   ```
 
-## Run tests
+   Compose дождётся готовности PostgreSQL, применит миграции и запустит API. База данных будет доступна с компьютера на `localhost:5433`, API — на `localhost:1119`.
 
-```bash
-# unit tests
-$ npm run test
+4. Заполните базу демонстрационными данными:
 
-# e2e tests
-$ npm run test:e2e
+   ```bash
+   npx prisma db seed
+   ```
 
-# test coverage
-$ npm run test:cov
-```
+   **Важно:** seed сначала удаляет данные из настроенной базы и создаёт демонстрационные заново. Используйте его только для локальной базы проекта, в которой нет нужных данных. После изменений в seed повторный запуск также пересоздаст содержимое.
 
-## Deployment
+5. Откройте интерактивную документацию:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+   **[http://localhost:1119/docs](http://localhost:1119/docs)**
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+   В Swagger UI можно просматривать маршруты, схемы запросов и ответов, а также отправлять запросы через **Try it out**. Начните с публичных `GET /api/products` и `GET /api/categories`. Для защищённых операций сначала зарегистрируйтесь или войдите через `/api/auth/register` или `/api/auth/login`; браузер сохранит auth cookies для последующих запросов.
+
+Данные для входа после seed:
+
+| Роль | Email | Пароль |
+| --- | --- | --- |
+| Администратор | `admin@greenshop.test` | `GreenShop123!` |
+| Покупатель | `alexandra@greenshop.test` | `GreenShop123!` |
+
+Это демонстрационные учётные записи локальной базы, не используйте их в production.
+
+Остановить контейнеры, сохранив базу:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Запуск тестов
 
-## Resources
+E2E-тесты используют отдельную PostgreSQL на порту `5434`; они не должны запускаться против демонстрационной базы на `5433`.
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+cp .env.test.example .env.test.local
+docker compose --env-file .env.test.local -f docker-compose.test.yml up -d
+npm run db:test:migrate
+npm test -- --runInBand
+npm run test:e2e
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+После тестов тестовую БД можно остановить:
 
-## Support
+```bash
+docker compose --env-file .env.test.local -f docker-compose.test.yml down
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+`.env.test.local` содержит только параметры локальной тестовой базы и игнорируется Git.
 
-## Stay in touch
+## Основные маршруты
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Все API-маршруты имеют префикс `/api`.
 
-## License
+| Область | Примеры |
+| --- | --- |
+| Каталог | `GET /api/products`, `GET /api/products/{productId}` |
+| Категории | `GET /api/categories` |
+| Авторизация | `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`, `POST /api/auth/logout` |
+| Корзина | `GET /api/cart`, `POST /api/cart/items` |
+| Заказы | `POST /api/orders`, `GET /api/orders` |
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Полный список маршрутов и доступов указан в Swagger: [http://localhost:1119/docs](http://localhost:1119/docs).
+
+## Настройки окружения
+
+`.env.example` содержит шаблон локальных настроек. Для Docker Compose используются `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` и `JWT_ACCESS_SECRET`; `DATABASE_URL` в этом файле нужна Prisma-командам, запускаемым непосредственно на компьютере, например `prisma db seed`.
+
+Не коммитьте `.env`, `.env.test.local` или реальные секреты. Для публикации API потребуется развернуть приложение и базу на сервере/хостинге, настроить домен и HTTPS; локальный адрес `localhost` доступен только на компьютере, где запущен проект.

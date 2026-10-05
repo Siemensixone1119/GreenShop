@@ -17,7 +17,22 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
 import type { PublicUser } from '../users/types/public-user.type.js';
 import { CurrentUser } from './decorators/current-user.decorator.js';
 import { Throttle } from '@nestjs/throttler';
+import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCookieAuth,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiTooManyRequestsResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { AuthUserResponseDto } from './dto/auth-user-response.dto.js';
 
+@ApiTags('Auth')
+@ApiTooManyRequestsResponse({ description: 'Превышен лимит запросов' })
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -30,6 +45,18 @@ export class AuthController {
       ttl: 60_000,
     },
   })
+  @ApiOperation({ summary: 'Регистрация пользователя' })
+  @ApiCreatedResponse({
+    description: 'Пользователь успешно зарегистрирован',
+    type: AuthUserResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Некорректные данные или пароли не совпадают',
+  })
+  @ApiConflictResponse({
+    description: 'Пользователь с таким email уже существует',
+  })
+  @ApiTooManyRequestsResponse({ description: 'Превышен лимит запросов' })
   @Post('register')
   async register(
     @Body() body: RegisterUserDto,
@@ -56,6 +83,14 @@ export class AuthController {
       ttl: 60_000,
     },
   })
+  @ApiOperation({ summary: 'Вход в аккаунт' })
+  @ApiOkResponse({
+    description: 'Вход выполнен успешно',
+    type: AuthUserResponseDto,
+  })
+  @ApiBadRequestResponse({ description: 'Некорректные данные для входа' })
+  @ApiUnauthorizedResponse({ description: 'Неверный email или пароль' })
+  @ApiTooManyRequestsResponse({ description: 'Превышен лимит попыток входа' })
   @Post('login')
   async login(
     @Body() body: LoginUserDto,
@@ -75,6 +110,17 @@ export class AuthController {
     };
   }
 
+  @ApiCookieAuth('refreshToken')
+  @ApiCookieAuth('sessionId')
+  @ApiOperation({ summary: 'Обновление токенов' })
+  @ApiOkResponse({
+    description: 'Токены успешно обновлены',
+    type: AuthUserResponseDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Сессия или refresh token недействительны',
+  })
+  @ApiTooManyRequestsResponse({ description: 'Превышен лимит запросов' })
   @HttpCode(HttpStatus.OK)
   @Throttle({
     default: {
@@ -99,6 +145,11 @@ export class AuthController {
     };
   }
 
+  @ApiCookieAuth('refreshToken')
+  @ApiCookieAuth('sessionId')
+  @ApiOperation({ summary: 'Завершение текущей сессии' })
+  @ApiNoContentResponse({ description: 'Текущая сессия завершена' })
+  @ApiUnauthorizedResponse({ description: 'Нет действительной сессии' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('logout')
   async logout(
@@ -109,6 +160,11 @@ export class AuthController {
     this.clearCookie(response);
   }
 
+  @ApiCookieAuth('refreshToken')
+  @ApiCookieAuth('sessionId')
+  @ApiOperation({ summary: 'Завершение всех сессий пользователя' })
+  @ApiNoContentResponse({ description: 'Все сессии пользователя завершены' })
+  @ApiUnauthorizedResponse({ description: 'Нет действительной сессии' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('logout-all')
   async logoutAll(
@@ -119,6 +175,13 @@ export class AuthController {
     this.clearCookie(response);
   }
 
+  @ApiCookieAuth('accessToken')
+  @ApiOperation({ summary: 'Получение текущего пользователя' })
+  @ApiOkResponse({
+    description: 'Текущий пользователь',
+    type: AuthUserResponseDto,
+  })
+  @ApiUnauthorizedResponse({ description: 'Пользователь не авторизован' })
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get('me')
