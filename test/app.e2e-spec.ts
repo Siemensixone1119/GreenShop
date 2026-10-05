@@ -6,9 +6,11 @@ import type { App } from 'supertest/types.js';
 import { afterAll, beforeAll, describe, it } from '@jest/globals';
 import { AppModule } from '../src/app.module.js';
 import { setupApp } from '../src/setup-app.js';
+import { PrismaService } from '../src/prisma/prisma.service.js';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -18,6 +20,7 @@ describe('AppController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     setupApp(app);
     await app.init();
+    prisma = app.get(PrismaService);
   });
 
   it('/ (GET)', () => {
@@ -28,6 +31,7 @@ describe('AppController (e2e)', () => {
   });
 
   afterAll(async () => {
+    await prisma.$disconnect();
     await app.close();
   });
 });

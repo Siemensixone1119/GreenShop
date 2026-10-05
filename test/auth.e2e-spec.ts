@@ -263,6 +263,7 @@ describe('Auth (e2e)', () => {
 
   afterAll(async () => {
     await clearDataDB(prisma);
+    await prisma.$disconnect();
     await app.close();
   });
 });

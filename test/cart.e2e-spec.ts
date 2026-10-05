@@ -185,12 +185,105 @@ describe('Cart (e2e)', () => {
     });
   });
 
-  it.todo('не добавляет количество больше остатка');
-  it.todo('устанавливает новое количество позиции');
-  it.todo('удаляет позицию из корзины');
+  it('не добавляет количество больше остатка', async () => {
+    const agent = request.agent(httpServer);
+    await agent
+      .post('/api/auth/register')
+      .send(createRegisterRequestData())
+      .expect(201);
+    const category = await createCategoryFixture(prisma);
+    const product = await createProductFixture(prisma, category.id);
+    const productVariant = await createProductVariantFixture(
+      prisma,
+      product.id,
+      {
+        stock: 3,
+      },
+    );
+    const addCartItemRequestData = createAddCartItemRequestData(
+      productVariant.id,
+      { quantity: 4 },
+    );
+    const response = await agent
+      .post('/api/cart/items')
+      .send(addCartItemRequestData);
+    const body = response.body as ErrorResponseBody;
+
+    expect(response.status).toBe(400);
+    expect(body.message).toBe('Недостаточно товара на складе');
+  });
+
+  it('устанавливает новое количество позиции', async () => {
+    const agent = request.agent(httpServer);
+    await agent
+      .post('/api/auth/register')
+      .send(createRegisterRequestData())
+      .expect(201);
+    const category = await createCategoryFixture(prisma);
+    const product = await createProductFixture(prisma, category.id);
+    const productVariant = await createProductVariantFixture(
+      prisma,
+      product.id,
+    );
+    const addCartItemRequestData = createAddCartItemRequestData(
+      productVariant.id,
+      { quantity: 2 },
+    );
+    await agent
+      .post('/api/cart/items')
+      .send(addCartItemRequestData)
+      .expect(201);
+    const updateCartItemRequestData = createUpdateCartItemRequestData({
+      quantity: 5,
+    });
+    const response = await agent
+      .patch(`/api/cart/items/${productVariant.id}`)
+      .send(updateCartItemRequestData);
+    const body = response.body as CartItemResponseBody;
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      productVariantId: productVariant.id,
+      quantity: updateCartItemRequestData.quantity,
+    });
+  });
+
+  it('удаляет позицию из корзины', async () => {
+    const registerRequestData = createRegisterRequestData();
+    const agent = request.agent(httpServer);
+    const registration = await agent
+      .post('/api/auth/register')
+      .send(registerRequestData)
+      .expect(201);
+    const category = await createCategoryFixture(prisma);
+    const product = await createProductFixture(prisma, category.id);
+    const productVariant = await createProductVariantFixture(
+      prisma,
+      product.id,
+    );
+    const registrationBody = registration.body as RegistrationResponseBody;
+    const cart = await createCartFixture(prisma, registrationBody.user.id);
+    const cartItem = await createCartItemFixture(
+      prisma,
+      cart.id,
+      productVariant.id,
+    );
+    const response = await agent.delete(`/api/cart/items/${productVariant.id}`);
+    const body = response.body as CartItemResponseBody;
+    const cartResponse = await agent.get('/api/cart');
+    const cartBody = cartResponse.body as CartResponseBody;
+
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({
+      id: cartItem.id,
+      productVariantId: productVariant.id,
+    });
+    expect(cartBody.items).toHaveLength(0);
+  });
 
   afterAll(async () => {
     await clearDataDB(prisma);
+    await prisma.$disconnect();
     await app.close();
   });
 });
